@@ -172,15 +172,6 @@ def main_page():
                     st.session_state.relic_card = st.session_state.relics[1]
                     st.rerun()
 
-            st.markdown(
-                """     
-                <div style="font-size: 0.87em; text-align: center;">
-                본 이미지는 <strong>국립중앙박물관</strong>이 공공누리 제1유형으로 개방한 자료로서<br><a href="https://www.museum.go.kr">museum.go.kr</a>에서 무료로 다운로드 받을 수 있습니다.
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-
             st.markdown("---")
             st.markdown(how_to_use)
 
