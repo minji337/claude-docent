@@ -66,7 +66,36 @@ st.markdown(
             transform: translateX(-50%);
             font-size: 0.8rem;
             color: #888888;
-        }   
+        } 
+
+        .stSpinner {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);            
+            margin: 0 auto;
+            width: 350px;
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #f0f0f0; /* 스피너 배경색 추가 */
+            padding: 10px; /* 배경색이 잘 보이도록 패딩 추가 */
+            border-radius: 5px; /* 모서리 둥글게 */
+            z-index: 9999; /* 최상단에 위치 */
+        }
+
+        .disable_overlay {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9998; 
+            background-color: rgba(0,0,0,0);
+            box-shadow: 2px 2px 10px rgba(0,0,0,0);
+        }
+
+       
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -102,6 +131,25 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
+def on_progress(func):
+    overlay_placeholder = st.empty()
+    overlay_placeholder.markdown(
+        """
+        <div class="disable_overlay"></div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.spinner("잠시만 기다려주세요."):
+        try:
+            result = func()
+        except Exception as e:
+            st.error(f"도슨트 챗봇에서 오류가 발생했습니다: {e}")
+            return "", "오류가 발생했네요. 죄송하지만 잠시 후 다시 시도해주세요."
+
+    overlay_placeholder.empty()
+    return result
+
+
 def init_page():
     # 사이드바 설정
     with st.sidebar:
@@ -111,7 +159,7 @@ def init_page():
     st.markdown(
         """
         <div class="intro-text">
-            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h2>
+            <h3>AI 도슨트 👩‍🦰 뮤지입니다1</h2>
             <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.<p>
             <p>
                 저는 이곳 박물관에서 근무하는 인공지능 도슨트 봇 뮤지입니다.<br>
@@ -167,6 +215,7 @@ def main_page(docent_bot: DocentBot):
             with col_left:
                 if st.button("이전", use_container_width=True):
                     logger.info("이전 버튼이 클릭되었습니다.")
+                    on_progress(lambda: docent_bot.move(is_next=False))
                     docent_bot.move(is_next=False)
                     st.session_state.relic_card = docent_bot.relics.current_to_card()
                     st.rerun()
@@ -174,7 +223,7 @@ def main_page(docent_bot: DocentBot):
             with col_right:
                 if st.button("다음", use_container_width=True):
                     logger.info("다음 버튼이 클릭되었습니다.")
-                    docent_bot.move(is_next=True)
+                    on_progress(lambda: docent_bot.move(is_next=True))
                     st.session_state.relic_card = docent_bot.relics.current_to_card()
                     st.rerun()
 
@@ -198,7 +247,9 @@ def main_page(docent_bot: DocentBot):
         if user_message:
             with st.chat_message("user", avatar=avatar["user"]):
                 st.markdown(user_message)
-            docent_answer = docent_bot.answer(user_message)
+            docent_answer = on_progress(
+                lambda: docent_bot.answer(user_message)
+            )
             with st.chat_message("assistant", avatar=avatar["assistant"]):
                 st.markdown(docent_answer)
 
@@ -211,8 +262,7 @@ if "status" not in st.session_state:
 elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
     st.session_state.status = "guide_active"
-    # st.session_state.relic_card = st.session_state.relics[0]
-    docent_bot.move(is_next=True)
+    on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()
     st.rerun()
 elif st.session_state.status == "guide_active":

@@ -34,3 +34,9 @@ guide_instruction = """
     </instructions>
 </system_command>
 """.strip()
+
+revisit_instruction = """
+<system_command>
+사용자가 현재 보고 있는 전시물은 조금 전 관람했던 전시물을 다시 네비게이션하여 재관람하고 있는 전시물입니다. 이런 점을 고려하여 대화를 나누어야 하며, 따라서 이미 설명했던 부분을 반복하지 말아야 합니다.
+</system_command>
+""".strip()
