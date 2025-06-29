@@ -33,7 +33,7 @@ class DocentBot:
             except ValueError as e:
                 self._underflow()
 
-        if not self.relics.current["is_presented"]:
+        if not self.relics.is_presented():
             self._present_relic()
 
     def answer(self, user_input: str) -> str:
