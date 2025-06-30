@@ -1,5 +1,8 @@
 from anthropic import Anthropic
 from .prompt_templates import system_prompt
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LLM:
@@ -15,7 +18,7 @@ class LLM:
         temperature: float = 0.5,
         max_tokens: int = 2048,
         system_prompt: str | None = None,
-        stop_sequences: list[str] = [],
+        stop_sequences: list[str] | None = None,
     ) -> str:
         try:
             response = self.client.messages.create(
@@ -24,13 +27,11 @@ class LLM:
                 system=system_prompt or self.system_prompt,
                 messages=messages,
                 model=self.model,
-                stop_sequences=stop_sequences,
-                extra_headers={"anthropic-beta": "files-api-2025-04-14"},
+                stop_sequences=stop_sequences                ,
             )
-            print("대화 토큰 사용:", response.usage.model_dump_json())
             return response.content[0].text
         except Exception as e:
-            print(f"[create_response error] {e}")
+            logging.error(f"[create_response error] {e}")
             raise e
 
 

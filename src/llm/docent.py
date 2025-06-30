@@ -28,7 +28,6 @@ class ExceptionHandler:
     def underflow(messages: list, relics: Relics):
         messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
         relics.index = 0
-    
 
 
 class InstructionHandler:
@@ -82,8 +81,7 @@ class InstructionHandler:
 
 class DocentBot:
 
-    def __init__(self, model_name="claude-sonnet-4-20250514"):
-        self.model = model_name
+    def __init__(self):
         self.messages = []
         self.relics = Relics()
         self.instruction = InstructionHandler()
