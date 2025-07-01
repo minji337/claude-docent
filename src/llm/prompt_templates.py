@@ -44,4 +44,17 @@ revisit_instruction = """
 tool_system_prompt = """
 다음 중 하나의 CASE만 선택하세요.
 CASE-1. '시대'와 '장르'로 검색 요청하는 경우 search_relics_by_period_and_genre를 사용할 것.
+CASE-2. 역사적 사실에 대해 질의할 때만 search_historical_facts를 사용할 것.
+""".strip()
+
+history_based_prompt = """
+<system_command>
+    - <history_facts/>를 바탕으로 사용자의 질문에 답할 것
+    - <history_facts/> 중 사용자의 질문과 직접적인 관련이 없는 내용은 말하지 말 것
+    - <history_facts/>에 값이 없으면 관련 정보가 없어 질문에 답할 수 없다고 밝힐 것
+    
+    <history_facts>
+    {history_facts}
+    </history_facts>
+</system_command>
 """.strip()

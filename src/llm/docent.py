@@ -5,10 +5,11 @@ import logging
 from .prompt_templates import (
     system_prompt,
     guide_instruction,
-    revisit_instruction
+    revisit_instruction,
+    history_based_prompt 
 )
 from .llm import claude_4 as claude
-from .tools import use_tools
+from .tools import use_tools, ToolData
 
 logger = logging.getLogger(__name__)
 
@@ -127,23 +128,52 @@ class DocentBot:
         if not self.relics.is_presented(): 
             self._present_relic()
 
-    def answer(self, user_input: str) -> str:
+    # 전시물 검색 실습용
+    # def answer(self, user_input: str) -> str:
+    #     self.instruction.check_and_add(self.relics, self.messages)
+    #     self.messages.append({"role": "user", "content": user_input})
+    #     searched_database, message_dict = use_tools(
+    #         self.get_conversation(),
+    #         self.relics.original_database,
+    #     )
+    #     if searched_database:
+    #         self.relics = SearchedRelics(searched_database, self.relics.original)
+    #         self.messages.append(message_dict)
+    #         response_message = message_dict["content"]
+    #     else:
+    #         response_message = claude.create_response_text(messages=self.messages)
+    #         self.messages.append({"role": "assistant", "content": response_message})
+    #     return response_message
+    
+    # 역사적 사실 검색 실습용
+    def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
-        searched_database, message_dict = use_tools(
-            self.get_conversation(),
+        tool_data: Optional[ToolData] = None
+        message_dict: Optional[dict[str, str]] = None
+        conversation = self.get_conversation()
+        tool_data, message_dict = use_tools(
+            conversation,
             self.relics.original_database,
         )
-        if searched_database:
-            self.relics = SearchedRelics(searched_database, self.relics.original)
-            self.messages.append(message_dict)
-            response_message = message_dict["content"]
-        else:
-            response_message = claude.create_response_text(messages=self.messages)
-            self.messages.append({"role": "assistant", "content": response_message})
-        return response_message
+        references: list = []
+        match tool_data:
+            case {"type": "relics", "items": items}:
+                if len(items) > 0:
+                    self.relics = SearchedRelics(items, self.relics.original)
+                self.messages.append(message_dict)
+                response_message = message_dict["content"]
+            case {"type": "facts", "items": references}:
+                self.messages.append(message_dict)
+                response_message = claude.create_response_text(messages=self.messages)
+                self.messages.append({"role": "assistant", "content": response_message})
+            case _:
+                response_message = claude.create_response_text(messages=self.messages)
+                self.messages.append({"role": "assistant", "content": response_message})                
+        
+        return references, response_message
 
-
+    
     def get_conversation(self):
         conversation = []
         for message in self.messages:

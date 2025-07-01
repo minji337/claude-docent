@@ -159,7 +159,7 @@ def init_page():
     st.markdown(
         """
         <div class="intro-text">
-            <h3>AI 도슨트 👩‍🦰 뮤지입니다1</h2>
+            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h2>
             <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.<p>
             <p>
                 저는 이곳 박물관에서 근무하는 인공지능 도슨트 봇 뮤지입니다.<br>
@@ -247,11 +247,15 @@ def main_page(docent_bot: DocentBot):
         if user_message:
             with st.chat_message("user", avatar=avatar["user"]):
                 st.markdown(user_message)
-            docent_answer = on_progress(
+            references, docent_answer = on_progress(
                 lambda: docent_bot.answer(user_message)
             )
             with st.chat_message("assistant", avatar=avatar["assistant"]):
                 st.markdown(docent_answer)
+                if references:
+                    expander = st.expander("📚 출처:")
+                    for title, url in references:
+                        expander.markdown(f"- [{title}]({url})")
 
     side_bar()
     chat_area()
