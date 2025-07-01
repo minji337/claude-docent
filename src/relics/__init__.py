@@ -1,3 +1,3 @@
 from .relics import *
 
-__all__ = ["Relics"]
+__all__ = ["Relics", "SearchedRelics"]

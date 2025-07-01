@@ -5,7 +5,6 @@ from io import BytesIO
 import base64
 
 def get_base64_data(file_path):
-    # 이미지를 한 번만 열기
     img = Image.open(file_path)
     buffer = BytesIO()
     img.save(buffer, format=img.format or "JPEG")  # 원본 포맷 유지 또는 JPEG 기본값

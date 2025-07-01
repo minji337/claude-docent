@@ -4,7 +4,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["python312Packages.black"]
+packages = ["python312Packages.black", "unzipNLS"]
 
 [unitTest]
 language = "python3"

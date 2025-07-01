@@ -261,6 +261,9 @@ if "status" not in st.session_state:
     init_page()
 elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
+    with st.chat_message("assistant", avatar=avatar["assistant"]):
+        st.markdown(docent_bot.greet())
+        
     st.session_state.status = "guide_active"
     on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()

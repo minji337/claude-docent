@@ -40,3 +40,8 @@ revisit_instruction = """
 사용자가 현재 보고 있는 전시물은 조금 전 관람했던 전시물을 다시 네비게이션하여 재관람하고 있는 전시물입니다. 이런 점을 고려하여 대화를 나누어야 하며, 따라서 이미 설명했던 부분을 반복하지 말아야 합니다.
 </system_command>
 """.strip()
+
+tool_system_prompt = """
+다음 중 하나의 CASE만 선택하세요.
+CASE-1. '시대'와 '장르'로 검색 요청하는 경우 search_relics_by_period_and_genre를 사용할 것.
+""".strip()

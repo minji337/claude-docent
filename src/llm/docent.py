@@ -1,5 +1,5 @@
 from anthropic import Anthropic
-from relics import Relics
+from relics import Relics, SearchedRelics
 from utils import get_base64_data
 import logging
 from .prompt_templates import (
@@ -7,39 +7,54 @@ from .prompt_templates import (
     guide_instruction,
     revisit_instruction
 )
+from .llm import claude_4 as claude
+from .tools import use_tools
 
 logger = logging.getLogger(__name__)
 
-client = Anthropic()
 
-class DocentBot:
+class ExceptionHandler:
 
-    def __init__(self, model_name="claude-sonnet-4-20250514"):
-        self.model = model_name
-        self.messages = []
-        self.relics = Relics()
-        self.last_guide_id = ""
-        
-    def _create_response(self):
-        try:
-            response = client.messages.create(
-                max_tokens=2048,
-                temperature=0.5,
-                system=system_prompt,
-                messages=self.messages,
-                model=self.model,
+    @staticmethod
+    def overflow(messages: list, relics: Relics):
+        if isinstance(relics, SearchedRelics):
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": "검색된 전시물을 모두 소개했습니다. 다음 전시물을 소개하겠습니다.",
+                }
             )
-            return response.content[0].text
-        except Exception as e:
-            logger.info(f"Error: {str(e)}")
-            raise e
+            relics.original.index += 1
+            return relics.original
+        else:
+            messages.append(
+                {
+                    "role": "assistant",
+                    "content": "준비한 전시물을 모두 소개했습니다. 오늘 유익한 시간 되었기를 바랍니다. 감사합니다.",
+                }
+            )
+            return relics
 
-    def _add_guide_instruction(self):
+    @staticmethod
+    def underflow(messages: list, relics: Relics):
+        messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
+        relics.index = 0
+
+
+class InstructionHandler:
+
+    first_present_index = 1
+
+    def __init__(self):
+        self.last_guide_id = ""
+
+    def add_guide(self, relics: Relics, messages: list):    
+        self._remove_before_guide(messages)    
         guide_instruction_prompt = guide_instruction.format(
-            label=self.relics.current["label"],
-            content=self.relics.current["content"],
+            label=relics.current["label"],
+            content=relics.current["content"],
         )
-        self.messages.append(
+        messages.append(
             {
                 "role": "user",
                 "content": [
@@ -48,61 +63,90 @@ class DocentBot:
                         "source": {
                             "type": "base64",
                             "media_type": "image/jpeg",
-                            "data": get_base64_data(self.relics.current["img_path"]),
+                            "data": get_base64_data(relics.current["img_path"]),
                         },
                     },
                     {"type": "text", "text": guide_instruction_prompt},
                 ],
             }
         )
-        self.last_guide_id = self.relics.current_id
+        self.last_guide_id = relics.current_id
+
+    def _remove_before_guide(self, messages: list):
+        for idx in reversed(range(len(messages))):
+            if not isinstance(messages[idx]["content"], list):
+                continue
+            if "text" not in messages[idx]["content"][1]:
+                continue
+            text_message: str = messages[idx]["content"][1]["text"]
+            if "<relic_information>" in text_message:
+                messages.pop(idx)
+                break
+
+    def check_and_add(self, relics: Relics, messages: list):
+        if self.last_guide_id == relics.current_id:
+            return
+        self.add_guide(relics, messages)
+        messages.append({"role": "user", "content": revisit_instruction})
+
+
+class DocentBot:
+
+    greeting_message = """
+    안녕하세요? 저는 이곳 박물관에서 근무하는 인공지능 봇 뮤지입니다.  
+    이곳에 전시된 작품에 대한 설명은 물론 저의 감상까지도 자세히 말씀드려요.   
+    그럼 첫 번째 전시물을 소개해드릴게요! 
+    """
+
+    def __init__(self):
+        self.messages = []
+        self.relics = Relics()
+        self.instruction = InstructionHandler()
+
+    def greet(self):
+        return self.greeting_message
 
     def _present_relic(self):
-        self._add_guide_instruction()
-        response_message = self._create_response()
+        self.instruction.add_guide(self.relics, self.messages)
+        response_message = claude.create_response_text(messages=self.messages)
         self.messages.append({"role": "assistant", "content": response_message})
-        self.relics.set_presented(True)
-
-    def _check_and_add(self):
-        if self.last_guide_id == self.relics.current_id:
-            return
-        self._add_guide_instruction()
-        self.messages.append({"role": "user", "content": revisit_instruction})
-
-    def _overflow(self):
-        self.messages.append(
-            {"role": "assistant", "content": "준비한 작품을 모두 소개했습니다."}
-        )
-
-    def _underflow(self):
-        self.messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
-        self.relics.index = 0
+        self.relics.set_presented(True)    
 
     def move(self, is_next: bool):
         if is_next:
             try:
                 self.relics.next()
             except IndexError as e:
-                self._overflow()
+                self.relics = ExceptionHandler.overflow(self.messages, self.relics)
         else:
             try:
                 self.relics.previous()
             except ValueError as e:
-                self._underflow()
+                ExceptionHandler.underflow(self.messages, self.relics)
 
         if not self.relics.is_presented(): 
             self._present_relic()
 
     def answer(self, user_input: str) -> str:
-        self._check_and_add()
+        self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
-        response_message = self._create_response()
-        self.messages.append({"role": "assistant", "content": response_message})
+        searched_database, message_dict = use_tools(
+            self.get_conversation(),
+            self.relics.original_database,
+        )
+        if searched_database:
+            self.relics = SearchedRelics(searched_database, self.relics.original)
+            self.messages.append(message_dict)
+            response_message = message_dict["content"]
+        else:
+            response_message = claude.create_response_text(messages=self.messages)
+            self.messages.append({"role": "assistant", "content": response_message})
         return response_message
+
 
     def get_conversation(self):
         conversation = []
-        for message in self.messages[1:]:
+        for message in self.messages:
             if isinstance(message["content"], list):
                 text_message: str = message["content"][1]["text"]
             else:

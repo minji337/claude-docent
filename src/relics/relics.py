@@ -12,8 +12,8 @@ class RelicsLoader:
             database = json.load(f)
         for key, value in database.items():
             value["img_path"] = str(
-                Path("data", "database", key, "image.jpg")
-                #Path("data", "database", key, Path(value["img"]).name)
+                #Path("data", "database", key, "image.jpg")
+                Path("data", "database", key, Path(value["img"]).name)
             )
             value["title"] = f"{value['label']['명칭']} ({key})"
         self.ids = list(database.keys())
@@ -28,10 +28,16 @@ relics_loader = RelicsLoader()
 
 class Relics:
 
-    def __init__(self):
-        self.database, self.ids = relics_loader.get_database()
+    def __init__(self, database: dict | None = None):
+        if database is None:
+            self.database, self.ids = relics_loader.get_database()
+            self.original = self
+            self.presented: set[str] = set()
+        else:
+            self.database = database
+            self.original = None
+            self.presented: set[str] = set()
         self.index = -1
-        self.presented: set[str] = set()
 
     @property
     def current_id(self):
@@ -54,8 +60,13 @@ class Relics:
         return self.current
 
     @property
+    def original_database(self):
+        return self.database
+
+    @property
     def header(self):
-        return f"{len(self.database)}점 중 {self.index + 1}번째 전시물입니다."
+        prefix = "검색된 작품" if isinstance(self, SearchedRelics) else ""
+        return f"{prefix} {len(self.database)}점 중 {self.index + 1}번째 전시물입니다."
 
     def set_presented(self, value: bool = True):
         if value:
@@ -72,3 +83,15 @@ class Relics:
             "img_path": self.current["img_path"],
             "title": self.current["title"],
         }
+
+
+class SearchedRelics(Relics):
+
+    def __init__(self, searched_database: dict, original: Relics):
+        super().__init__(searched_database)
+        self.original = original
+        self.ids = list(self.database.keys())
+
+    @property
+    def original_database(self):
+        return self.original.database
