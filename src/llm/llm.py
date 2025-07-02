@@ -59,7 +59,6 @@ class LLM:
                     {
                         "type": "text",
                         "text": tool_system_prompt or self.tool_system_prompt,
-                        "cache_control": {"type": "ephemeral"},
                     },
                 ],
                 messages=messages,
