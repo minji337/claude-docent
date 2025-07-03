@@ -102,7 +102,7 @@ class DocentBot:
 
     def get_conversation(self):
         conversation = []
-        for message in self.messages[1:]:
+        for message in self.messages:
             if isinstance(message["content"], list):
                 text_message: str = message["content"][1]["text"]
             else:
