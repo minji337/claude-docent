@@ -1,5 +1,5 @@
 from anthropic import Anthropic
-from .prompt_templates import system_prompt
+from .prompt_templates import system_prompt as default_system_prompt
 import logging
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class LLM:
                 system=system_prompt or self.system_prompt,
                 messages=messages,
                 model=self.model,
-                stop_sequences=stop_sequences                ,
+                stop_sequences=stop_sequences,
             )
             return response.content[0].text
         except Exception as e:
@@ -35,8 +35,12 @@ class LLM:
             raise e
 
 
-claude_3_7 = LLM(model_name="claude-3-7-sonnet-20250219", system_prompt=system_prompt)
-claude_4 = LLM(model_name="claude-sonnet-4-20250514", system_prompt=system_prompt)
+claude_3_7 = LLM(
+    model_name="claude-3-7-sonnet-20250219", system_prompt=default_system_prompt
+)
+claude_4 = LLM(
+    model_name="claude-sonnet-4-20250514", system_prompt=default_system_prompt
+)
 claude_3_5_haiku = LLM(
-    model_name="claude-3-5-haiku-20241022", system_prompt=system_prompt
+    model_name="claude-3-5-haiku-20241022", system_prompt=default_system_prompt
 )

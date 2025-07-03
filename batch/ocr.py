@@ -68,5 +68,5 @@ print(response.content[0].text)
 
 json_data = response.content[0].text
 
-with open(json_file, 'w', encoding='utf-8') as f:
-    f.write(json_data)
+# with open(json_file, 'w', encoding='utf-8') as f:
+#     f.write(json_data)
