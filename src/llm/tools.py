@@ -106,7 +106,7 @@ def search_historical_facts(query):
 
 # 역사적 사실 검색 실습용
 class ToolData(TypedDict):
-    type: Literal["relics", "facts", "needs_image"]
+    type: Literal["relics", "facts"]
     items: dict | list[tuple[str, str] | bool]
 
 

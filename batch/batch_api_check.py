@@ -35,6 +35,7 @@ BASE_DIR = Path(__file__).resolve().parent          # .../workspace/batch
 ROOT_DIR = BASE_DIR.parent                          # .../workspace
 
 relic_index_path = ROOT_DIR / "data" / "database" / "relic_index.json"
+
 with open(relic_index_path, "r", encoding="utf-8") as f:
     relic_index_json = json.load(f)
 
