@@ -51,6 +51,19 @@ tools = [
             },
         },
     },
+    {
+        "name": "needs_relic_image",
+        "description": "전시물 이미지가 필요한 질문인지 판단",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "is_image_needed": {
+                    "type": "boolean",
+                    "description": "사용자의 메시지가 전시물에 관한 것인지 여부",
+                },
+            },
+        },
+    },
 ]
 
 
@@ -136,11 +149,11 @@ def use_tools(
             "role": "user",
             "content": history_based_prompt.format(history_facts=message),
         }
-    # elif tool_content.name == "needs_relic_image":
-    #     tool_data: ToolData = {
-    #         "type": "needs_image",
-    #         "items": tool_content.input["is_image_needed"],
-    #     }
-    #     message_dict = None
+    elif tool_content.name == "needs_relic_image":
+        tool_data: ToolData = {
+            "type": "needs_image",
+            "items": tool_content.input["is_image_needed"],
+        }
+        message_dict = None
     logger.info(f"[tool_data type] {tool_data['type']}")
     return tool_data, message_dict

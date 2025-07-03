@@ -3,6 +3,7 @@ from pathlib import Path
 from PIL import Image
 from io import BytesIO
 import base64
+import json
 
 def get_base64_data(file_path):
     img = Image.open(file_path)
@@ -23,3 +24,12 @@ def setup_logging(level: int = logging.INFO) -> None:
     )
 
 logger = logging.getLogger(__name__)
+
+project_root = Path(__file__).parents[2]
+
+leaflet_root = project_root / "data" / "leaflet"
+with open(leaflet_root / "leaflet_meta.json", "r", encoding="utf-8") as f:
+    leaflet_id = json.load(f)["id"]
+
+with open(leaflet_root / "guide_program_meta.json", "r", encoding="utf-8") as f:
+    guide_program_id = json.load(f)["id"]

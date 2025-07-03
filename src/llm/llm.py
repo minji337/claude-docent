@@ -32,7 +32,9 @@ class LLM:
                 messages=messages,
                 model=self.model,
                 stop_sequences=stop_sequences,
+                extra_headers={"anthropic-beta": "files-api-2025-04-14"},
             )
+            print("대화 토큰 사용:", response.usage.model_dump_json())
             return response.content[0].text
         except Exception as e:
             logging.error(f"[create_response error] {e}")
@@ -66,6 +68,7 @@ class LLM:
                 model=self.model,
                 stop_sequences=stop_sequences,
             )
+            print("도구 토큰 사용:", response.usage.model_dump_json())
             return response
         except Exception as e:
             logging.info(f"[LLM ERROR] {e}")

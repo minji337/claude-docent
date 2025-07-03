@@ -45,6 +45,7 @@ tool_system_prompt = """
 다음 중 하나의 CASE만 선택하세요.
 CASE-1. '시대'와 '장르'로 검색 요청하는 경우 search_relics_by_period_and_genre를 사용할 것.
 CASE-2. 역사적 사실에 대해 질의할 때만 search_historical_facts를 사용할 것.
+CASE-3. 위의 두 가지 도구 모두 사용하지 않는 경우에 한해 needs_relic_image 사용할 것.
 """.strip()
 
 history_based_prompt = """
@@ -56,5 +57,11 @@ history_based_prompt = """
     <history_facts>
     {history_facts}
     </history_facts>
+</system_command>
+""".strip()
+
+museum_info_prompt = """
+<system_command>
+사용자가 실물 박물관에 대해 묻는 경우 이 정보 내에서 답하세요. 박물관 이름은 **K-디지털 박물관**이라고 말해야 합니다.
 </system_command>
 """.strip()

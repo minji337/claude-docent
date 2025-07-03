@@ -1,12 +1,13 @@
 from anthropic import Anthropic
 from relics import Relics, SearchedRelics
-from utils import get_base64_data
+from utils import get_base64_data, leaflet_id, guide_program_id
 import logging
 from .prompt_templates import (
     system_prompt,
     guide_instruction,
     revisit_instruction,
-    history_based_prompt 
+    history_based_prompt,
+    museum_info_prompt,
 )
 from .llm import claude_4 as claude
 from .tools import use_tools, ToolData
@@ -44,10 +45,37 @@ class ExceptionHandler:
 
 class InstructionHandler:
 
+    #first_present_index = 0
     first_present_index = 1
 
     def __init__(self):
         self.last_guide_id = ""
+
+    def add_museum_info(self, messages: list):
+        messages.append(
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "document",
+                        "source": {"type": "file", "file_id": leaflet_id},
+                    },
+                    {
+                        "type": "document",
+                        "source": {
+                            "type": "file",
+                            "file_id": guide_program_id,
+                        },
+                    },
+                    {
+                        "type": "text",
+                        "text": museum_info_prompt,
+                        "cache_control": {"type": "ephemeral"},
+                    },
+                ],
+            }
+        )
+
 
     def add_guide(self, relics: Relics, messages: list):    
         self._remove_before_guide(messages)    
@@ -72,9 +100,15 @@ class InstructionHandler:
             }
         )
         self.last_guide_id = relics.current_id
+        if len(messages) == self.first_present_index + 1:
+            messages[self.first_present_index]["content"][1]["cache_control"] = {
+                "type": "ephemeral"
+            }
 
     def _remove_before_guide(self, messages: list):
         for idx in reversed(range(len(messages))):
+            if self.first_present_index <= idx:
+                continue
             if not isinstance(messages[idx]["content"], list):
                 continue
             if "text" not in messages[idx]["content"][1]:
@@ -103,6 +137,7 @@ class DocentBot:
         self.messages = []
         self.relics = Relics()
         self.instruction = InstructionHandler()
+        self.instruction.add_museum_info(self.messages)	
 
     def greet(self):
         return self.greeting_message
@@ -167,16 +202,27 @@ class DocentBot:
                 self.messages.append(message_dict)
                 response_message = claude.create_response_text(messages=self.messages)
                 self.messages.append({"role": "assistant", "content": response_message})
+            case {"type": "needs_image", "items": needs_image}:
+                messages = (
+                    self.messages
+                    if needs_image
+                    else self.museum_info_message + conversation
+                )
+                response_message = claude.create_response_text(messages=messages)
+                self.messages.append({"role": "assistant", "content": response_message})
             case _:
                 response_message = claude.create_response_text(messages=self.messages)
                 self.messages.append({"role": "assistant", "content": response_message})                
         
         return references, response_message
 
+    @property
+    def museum_info_message(self):
+        return [self.messages[0]]
     
     def get_conversation(self):
         conversation = []
-        for message in self.messages:
+        for message in self.messages[1:]:
             if isinstance(message["content"], list):
                 text_message: str = message["content"][1]["text"]
             else:
