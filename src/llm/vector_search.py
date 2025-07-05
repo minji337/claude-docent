@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 import numpy as np
 import os
-from utils import project_root
 from openai import OpenAI
 from .llm import claude_4 as claude
 from .prompt_templates import search_result_filter
 import json
+from utils.utils import setup_logging, project_root
 
 upstage = OpenAI(
     api_key=os.getenv("UPSTAGE_API_KEY"), base_url="https://api.upstage.ai/v1"
@@ -29,7 +29,7 @@ class Collecton:
 
     def __init__(self, name: str):
         self.name = name
-        self.file_path = ROOT_DIR / "data" / "vector_store" / f"{name}"
+        self.file_path = project_root / "data" / "vector_store" / f"{name}"
         self.index: dict[str, DocEmbedding] = {}
 
     def load(self) -> "Collecton":

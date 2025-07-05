@@ -5,6 +5,14 @@ from .llm import claude_4 as claude
 import logging
 from tavily import TavilyClient
 from .prompt_templates import history_based_prompt
+from .vector_search import (
+    title_collection,
+    content_collection,
+    description_collection,
+    get_rrf,
+    filter_results,
+)
+
 
 logger = logging.getLogger(__name__)
 
