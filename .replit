@@ -4,7 +4,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["cacert", "gcc"]
+packages = ["cacert", "freetype", "gcc", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib"]
 
 [unitTest]
 language = "python3"
@@ -18,8 +18,4 @@ deploymentTarget = "cloudrun"
 
 [[ports]]
 localPort = 8000
-externalPort = 8000
-
-[[ports]]
-localPort = 8501
 externalPort = 80

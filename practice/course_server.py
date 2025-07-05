@@ -57,12 +57,11 @@ def get_course_prompt_template(
 ) -> str:
     return f"현재 직업은 {job}에요. {interest}에 대해 관심이 많아요. 강의 추천해주세요."
 
-
 if __name__ == "__main__":
     try:
         logger.info("Starting MCP server..............")
         #asyncio.run(mcp.run(transport="streamable-http"))
         #asyncio.run(mcp.run(transport="stdio"))
-        asyncio.run(mcp.run(transport="sse", host="0.0.0.0", port=8000, path="/mcp"))    
+        asyncio.run(mcp.run(transport="streamable-http", host="0.0.0.0", port=8000))
     except Exception as e:
         logger.error(f"Server error: {str(e)}", exc_info=True)
