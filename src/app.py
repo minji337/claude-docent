@@ -1,7 +1,15 @@
 import streamlit as st
 import logging
-from utils import setup_logging, logger, get_base64_data
+from utils import setup_logging, logger, get_base64_data, email_to_6digit_hash
 from llm import DocentBot
+import datetime
+import asyncio
+import threading
+from concurrent.futures import Future
+from reservation.reservation_agent import ReservationAgent
+import re
+import datetime
+
 
 setup_logging()
 
@@ -150,6 +158,33 @@ def on_progress(func):
     return result
 
 
+@st.cache_resource(show_spinner=False)
+def _get_loop() -> asyncio.AbstractEventLoop:
+    """
+    새로운 이벤트 루프를 만들고 별도 데몬 스레드에서 run_forever로 영원히 돌린다.Streamlit 스크립트가 재실행되어도 이 루프는 그대로 유지된다.
+    """
+    loop = asyncio.new_event_loop()  # 새 루프
+    t = threading.Thread(target=loop.run_forever, daemon=True)
+    t.start()
+    return loop
+
+
+def run_async(coro) -> Future:
+    # concurrent.futures.Future 를 즉시 반환하므로 Streamlit 쪽에서는 동기 코드처럼 상태를 확인할 수 있다.
+    loop = _get_loop()
+    return asyncio.run_coroutine_threadsafe(coro, loop)
+
+
+@st.cache_resource(show_spinner=False)
+def get_reservation_agent():
+    agent = ReservationAgent()
+    future = run_async(agent.connect_server())
+    return agent, future
+
+
+resv_agent, mcp_connection_future = get_reservation_agent()
+
+
 def init_page():
     # 사이드바 설정
     with st.sidebar:
@@ -239,6 +274,104 @@ def main_page(docent_bot: DocentBot):
             st.markdown("---")
             st.markdown(how_to_use)
 
+            with st.form("docent_program_form"):
+                st.subheader("문화해설 프로그램 신청")
+    
+                program = st.selectbox(
+                    label="프로그램을 선택하세요",
+                    options=[
+                        "대표 유물 해설",
+                        "전시관별 해설",
+                        "외국인을 위한 해설(영어)",
+                        "외국인을 위한 해설(중국어)",
+                        "외국인을 위한 해설(일본어)",
+                    ],
+                    disabled=st.session_state.get("form_submitted", False),
+                )
+        
+                tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+                weekday_map = ["월", "화", "수", "목", "금"]
+                weekdays = []
+                d = tomorrow
+                while len(weekdays) < 10:
+                    if d.weekday() < 5:  # 0~4: 월~금
+                        weekdays.append(
+                            f"{d.strftime('%Y-%m-%d')} ({weekday_map[d.weekday()]})"
+                        )
+                    d += datetime.timedelta(days=1)
+        
+                visit_date = st.selectbox(
+                    label="방문 일자를 선택하세요",
+                    options=weekdays,
+                    disabled=st.session_state.get("form_submitted", False),
+                )
+        
+                visit_hours = st.selectbox(
+                    label="방문 시간을 선택하세요",
+                    options=["11:00", "13:00", "15:00"],
+                    disabled=st.session_state.get("form_submitted", False),
+                )
+        
+                visitors = st.number_input(
+                    label="방문 인원수를 입력하세요",
+                    min_value=1,
+                    value=1,
+                    disabled=st.session_state.get("form_submitted", False),
+                )
+        
+                applicant_email = st.text_input(
+                    label="신청자 이메일을 입력하세요",
+                    value="minjigobi@gmail.com",
+                    disabled=st.session_state.get("form_submitted", False),
+                )
+        
+                submitted = st.form_submit_button(
+                    label="신청하기",
+                    disabled=st.session_state.get("locked", False),
+                    on_click=lambda: st.session_state.update(locked=True),
+                )
+                if submitted:
+                    email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    if not re.match(email_pattern, applicant_email):
+                        st.error("유효한 이메일 주소를 입력해주세요.")
+                        return
+        
+                    st.session_state.form_submitted = True
+                    application = {
+                        "program": program,
+                        "visit_date": visit_date,
+                        "visit_hours": visit_hours,
+                        "visitors": visitors,
+                        "applicant_email": applicant_email,
+                        "applicant_number": email_to_6digit_hash(applicant_email),
+                        "application_time": datetime.datetime.now().strftime(
+                            "%Y.%m.%d %H:%M:%S.%f"
+                        ),
+                    }
+                    # ① 아직 연결 중이라면: 메시지만 띄우고 함수 종료``
+                    if not mcp_connection_future.done():
+                        st.error(
+                            "MCP 서버에 연결 중입니다. 연결이 완료되면 다시 '신청하기'를 눌러 주세요."
+                        )
+                        return
+        
+                    if (
+                        mcp_connection_future.done()
+                        and mcp_connection_future.exception()
+                    ):
+                        st.error(
+                            f"MCP 서버 연결 실패: {str(mcp_connection_future.exception())}"
+                        )
+                        return
+        
+                    run_async(resv_agent.make_reservation(application))
+                    st.rerun()
+                else:
+                    st.markdown(
+                        "🔔문화해설사님이 배정되면 이메일로 알려드립니다.  \n🚨부득이한 사정으로 취소해야 할 경우 방문일 전일까지 배정된 문화해설사님의 이메일로 통지 부탁드립니다."
+                    )
+                    
+    
     def chat_area():
         for message in docent_bot.get_conversation():
             with st.chat_message(message["role"], avatar=avatar[message["role"]]):

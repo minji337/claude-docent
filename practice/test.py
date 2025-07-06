@@ -1,0 +1,17 @@
+import  os
+
+print(os.environ['ANTHROPIC_API_KEY'])
+print(1)
+print(os.environ['SLACK_BOT_TOKEN'])
+print(1)
+print(os.environ['UPSTAGE_API_KEY'])
+print(1)
+print(os.environ['SLACK_BOT_TOKEN'])
+print(1)
+print(os.environ['SMITHERY_API_KEY'])
+print(1)
+print(os.environ['SMTP_KEY'])
+print(1)
+print(os.environ['SENDER_EMAIL'])
+print(1)
+print(os.environ['MANAGER_EMAIL'])
