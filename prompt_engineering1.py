@@ -5,7 +5,7 @@ client = anthropic.Anthropic()
 prompt = """
 B612 소행성에서는 다음과 같이 연산합니다.
 3 + 2 = 1
-4 - 1 = 5
+4 - 1 = 5 
 6 - 2 = 8
 2 + 3 = -1
 
