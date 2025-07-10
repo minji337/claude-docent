@@ -1646,7 +1646,7 @@ dependencies = [
     { name = "pillow" },
     { name = "streamlit" },
     { name = "tavily-python" },
-]
+] 
 
 [package.metadata]
 requires-dist = [
@@ -1662,4 +1662,4 @@ requires-dist = [
     { name = "pillow", specifier = ">=11.2.1" },
     { name = "streamlit", specifier = ">=1.45.1" },
     { name = "tavily-python", specifier = ">=0.7.3" },
-]
+] 

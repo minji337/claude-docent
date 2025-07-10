@@ -17,4 +17,4 @@ dependencies = [
     "pillow>=11.2.1",
     "streamlit>=1.45.1",
     "tavily-python>=0.7.3",
-]
+]  

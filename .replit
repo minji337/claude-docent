@@ -1,8 +1,11 @@
 entrypoint = "main.py"
 modules = ["python-3.11"]
 
+# run = ["streamlit run hello_world.py"]
+
 [nix]
 channel = "stable-24_05"
+packages = ["cacert", "gcc"]
 
 [unitTest]
 language = "python3"
@@ -13,3 +16,7 @@ requiredFiles = [".replit", "replit.nix"]
 [deployment]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 8501
+externalPort = 80
