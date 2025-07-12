@@ -194,7 +194,7 @@ def main_page(docent_bot: DocentBot):
                 st.markdown(docent_answer)
 
     side_bar()
-    chat_area()
+    chat_area() 
 
 
 if "status" not in st.session_state:
