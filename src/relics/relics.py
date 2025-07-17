@@ -7,10 +7,10 @@ logger = logging.getLogger(__name__)
 
 class RelicsLoader:
 
-    def __init__(self):        
-        self.database = self.load_database()        
+    def __init__(self):
+        self.database = self.load_database()
 
-    def load_database(self):
+    def load_database(self) -> dict:
         try:
             file_path = Path("data") / "database" / "relic_index.json"
             with open(file_path, encoding="utf-8") as f:
@@ -26,7 +26,7 @@ class RelicsLoader:
             logging.error(f"[load_database error] {e}")
             raise e
 
-    def get_database(self):
+    def get_database(self) -> tuple[dict, list]:
         return self.database.copy(), self.ids
 
 
@@ -47,19 +47,19 @@ class Relics:
         self.index = -1
 
     @property
-    def current_id(self):
+    def current_id(self) -> str:
         return self.ids[self.index]
 
     @property
-    def current(self):
+    def current(self) -> dict:
         current_relic = self.database[self.current_id]
         return current_relic
 
-    def next(self):
+    def next(self) -> dict:
         self.index += 1
         return self.current
 
-    def previous(self):
+    def previous(self) -> dict:
         if self.index == 0:
             raise ValueError("현재 첫 번째 작품을 보고 있습니다.")
         else:
@@ -67,15 +67,15 @@ class Relics:
         return self.current
 
     @property
-    def original_database(self):
+    def original_database(self) -> dict:
         return self.database
 
     @property
-    def header(self):
+    def header(self) -> str:
         prefix = "검색된 작품" if isinstance(self, SearchedRelics) else ""
         return f"{prefix} {len(self.database)}점 중 {self.index + 1}번째 전시물입니다."
 
-    def set_presented(self, value: bool = True):
+    def set_presented(self, value: bool = True) -> None:
         if value:
             self.presented.add(self.current_id)
         else:
@@ -84,7 +84,7 @@ class Relics:
     def is_presented(self, id: str | None = None) -> bool:
         return (id or self.current_id) in self.presented
 
-    def current_to_card(self):
+    def current_to_card(self) -> dict:
         return {
             "header": self.header,
             "img_path": self.current["img_path"],
@@ -100,5 +100,5 @@ class SearchedRelics(Relics):
         self.ids = list(self.database.keys())
 
     @property
-    def original_database(self):
+    def original_database(self) -> dict:
         return self.original.database

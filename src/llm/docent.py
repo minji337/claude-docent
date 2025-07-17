@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class ExceptionHandler:
 
     @staticmethod
-    def overflow(messages: list, relics: Relics):
+    def overflow(messages: list, relics: Relics) -> Relics:
         if isinstance(relics, SearchedRelics):
             messages.append(
                 {
@@ -36,7 +36,7 @@ class ExceptionHandler:
             return relics
 
     @staticmethod
-    def underflow(messages: list, relics: Relics):
+    def underflow(messages: list, relics: Relics) -> None:
         messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
         relics.index = 0
 
@@ -49,7 +49,7 @@ class InstructionHandler:
     def __init__(self):
         self.last_guide_id = ""
 
-    def add_museum_info(self, messages: list):
+    def add_museum_info(self, messages: list) -> None:
         messages.append(
             {
                 "role": "user",
@@ -74,7 +74,7 @@ class InstructionHandler:
             }
         )
 
-    def add_guide(self, relics: Relics, messages: list):
+    def add_guide(self, relics: Relics, messages: list) -> None:
         self._remove_before_guide(messages)
         guide_instruction_prompt = guide_instruction.format(
             label=relics.current["label"],
@@ -102,7 +102,7 @@ class InstructionHandler:
                 "type": "ephemeral"
             }
 
-    def _remove_before_guide(self, messages: list):
+    def _remove_before_guide(self, messages: list) -> None:
         for idx in reversed(range(len(messages))):
             if self.first_present_index <= idx:
                 continue
@@ -115,7 +115,7 @@ class InstructionHandler:
                 messages.pop(idx)
                 break
 
-    def check_and_add(self, relics: Relics, messages: list):
+    def check_and_add(self, relics: Relics, messages: list) -> None:
         if self.last_guide_id == relics.current_id:
             return
         self.add_guide(relics, messages)
@@ -136,16 +136,16 @@ class DocentBot:
         self.instruction = InstructionHandler()
         self.instruction.add_museum_info(self.messages)
 
-    def greet(self):
+    def greet(self) -> str:
         return self.greeting_message
 
-    def _present_relic(self):
+    def _present_relic(self) -> None:
         self.instruction.add_guide(self.relics, self.messages)
         response_message = claude.create_response_text(messages=self.messages)
         self.messages.append({"role": "assistant", "content": response_message})
         self.relics.set_presented(True)
 
-    def move(self, is_next: bool):
+    def move(self, is_next: bool) -> None:
         if is_next:
             try:
                 self.relics.next()
@@ -214,10 +214,10 @@ class DocentBot:
         return references, response_message
 
     @property
-    def museum_info_message(self):
+    def museum_info_message(self) -> list:
         return [self.messages[0]]
 
-    def get_conversation(self):
+    def get_conversation(self) -> list:
         conversation = []
         for message in self.messages[1:]:
             if isinstance(message["content"], list):

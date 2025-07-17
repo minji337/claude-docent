@@ -25,6 +25,7 @@ class Similarity:
     doc: str
     score: float = 0
 
+
 class Collecton:
 
     def __init__(self, name: str):
@@ -43,15 +44,15 @@ class Collecton:
                 id=doc["id"], doc=doc["doc"], embedding=embedding.tolist()
             )
 
-        return self        
+        return self
 
-    def add_doc(self, id: str, doc: str):
+    def add_doc(self, id: str, doc: str) -> None:
         self.index[id] = DocEmbedding(id=id, doc=doc)
 
-    def build(self):
+    def build(self) -> None:
         doc_embeddings_all = list(self.index.values())
         doc_embeddings_chunks = [
-            doc_embeddings_all[i:i+100] 
+            doc_embeddings_all[i : i + 100]
             for i in range(0, len(doc_embeddings_all), 100)
         ]
 
@@ -66,12 +67,12 @@ class Collecton:
                 embedding_all_list.append(embedding)
 
         embedding_np_array = np.array(embedding_all_list)
-        np.save(f"{self.file_path}_embeddings.npy", embedding_np_array)        
+        np.save(f"{self.file_path}_embeddings.npy", embedding_np_array)
 
         with open(f"{self.file_path}_meta.json", "w", encoding="utf-8") as f:
             json.dump(doc_all_list, f, ensure_ascii=False, indent=2)
 
-    def query(self, query: str, cutoff=0.4, top_k: int = 60) -> dict[int, Similarity]:
+    def query(self, query: str, cutoff=0.4, top_k: int = 60) -> list[Similarity]:
         query_embedding = self._get_embeddings(query)[0]
         similarities: list[Similarity] = []
         for doc_embedding in self.index.values():
@@ -83,9 +84,7 @@ class Collecton:
                 continue
             similarities.append(
                 Similarity(
-                    id=doc_embedding.id,
-                    doc=doc_embedding.doc,
-                    score=float(score)
+                    id=doc_embedding.id, doc=doc_embedding.doc, score=float(score)
                 )
             )
 
@@ -94,10 +93,11 @@ class Collecton:
 
     def _get_embeddings(self, texts: list[str]) -> list[float]:
         embeddings = upstage.embeddings.create(input=texts, model="embedding-query")
-        return [embedding_data.embedding for embedding_data in embeddings.data]            
+        return [embedding_data.embedding for embedding_data in embeddings.data]
 
     def __len__(self) -> int:
         return len(self.index)
+
 
 def get_rrf(
     ranked_lists: list[list[Similarity]],
@@ -126,7 +126,7 @@ def get_rrf(
     return sorted(rrf_sim_dict.values(), key=lambda x: x.score, reverse=True)
 
 
-def filter_results(similarities: list[Similarity], query: str):
+def filter_results(similarities: list[Similarity], query: str) -> list[Similarity]:
 
     sim_dict: dict[str, Similarity] = {}
     for sim in similarities:

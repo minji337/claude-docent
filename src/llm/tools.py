@@ -58,7 +58,7 @@ tools = [
                 },
             },
         },
-    },    
+    },
     {
         "name": "search_historical_facts",
         "description": "역사적 사실에 대한 사용자의 질문에 답히기 위해 사용",
@@ -106,7 +106,7 @@ def search_relics_by_period_and_genre(
 
 def search_relics_without_period_and_genre(
     query: str, database: dict, user_message: str
-):
+) -> tuple[dict, str]:
     title_similarities = title_collection.query(query, top_k=5)
     description_similarities = description_collection.query(query, top_k=30)
     content_similarities = content_collection.query(query, top_k=30)
@@ -125,9 +125,9 @@ def search_relics_without_period_and_genre(
         else "요청하신 전시물의 검색 결과가 없습니다. 조금 더 구체적으로 말씀해주세요!"
     )
     return results, message
-    
 
-def search_historical_facts(query):
+
+def search_historical_facts(query) -> tuple[list, str]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],

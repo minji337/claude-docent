@@ -7,7 +7,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-#
+
 class LLM:
 
     def __init__(self, model_name: str, system_prompt: str, tool_system_prompt):
@@ -49,7 +49,7 @@ class LLM:
         tool_choice: dict[str, str] = {"type": "auto"},
         tool_system_prompt: str | None = None,
         stop_sequences: list[str] = [],
-    ):
+    ) -> dict:
 
         try:
             response = self.client.messages.create(

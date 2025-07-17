@@ -102,7 +102,7 @@ st.markdown(
             box-shadow: 2px 2px 10px rgba(0,0,0,0);
         }
 
-       
+
 
     </style>
     """,
@@ -139,7 +139,7 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
-def on_progress(func):
+def on_progress(func) -> tuple:
     overlay_placeholder = st.empty()
     overlay_placeholder.markdown(
         """
@@ -176,7 +176,7 @@ def run_async(coro) -> Future:
 
 
 @st.cache_resource(show_spinner=False)
-def get_reservation_agent():
+def get_reservation_agent() -> tuple:
     agent = ReservationAgent()
     future = run_async(agent.connect_server())
     return agent, future
@@ -185,7 +185,7 @@ def get_reservation_agent():
 resv_agent, mcp_connection_future = get_reservation_agent()
 
 
-def init_page():
+def init_page() -> None:
     # 사이드바 설정
     with st.sidebar:
         st.markdown(how_to_use)
@@ -220,9 +220,9 @@ def init_page():
             st.rerun()
 
 
-def main_page(docent_bot: DocentBot):
+def main_page(docent_bot: DocentBot) -> None:
 
-    def side_bar():
+    def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
 
@@ -269,13 +269,13 @@ def main_page(docent_bot: DocentBot):
                 """,
                 unsafe_allow_html=True,
             )
-    
+
             st.markdown("---")
             st.markdown(how_to_use)
 
             with st.form("docent_program_form"):
                 st.subheader("문화해설 프로그램 신청")
-    
+
                 program = st.selectbox(
                     label="프로그램을 선택하세요",
                     options=[
@@ -287,7 +287,7 @@ def main_page(docent_bot: DocentBot):
                     ],
                     disabled=st.session_state.get("form_submitted", False),
                 )
-        
+
                 tomorrow = datetime.date.today() + datetime.timedelta(days=1)
                 weekday_map = ["월", "화", "수", "목", "금"]
                 weekdays = []
@@ -298,32 +298,32 @@ def main_page(docent_bot: DocentBot):
                             f"{d.strftime('%Y-%m-%d')} ({weekday_map[d.weekday()]})"
                         )
                     d += datetime.timedelta(days=1)
-        
+
                 visit_date = st.selectbox(
                     label="방문 일자를 선택하세요",
                     options=weekdays,
                     disabled=st.session_state.get("form_submitted", False),
                 )
-        
+
                 visit_hours = st.selectbox(
                     label="방문 시간을 선택하세요",
                     options=["11:00", "13:00", "15:00"],
                     disabled=st.session_state.get("form_submitted", False),
                 )
-        
+
                 visitors = st.number_input(
                     label="방문 인원수를 입력하세요",
                     min_value=1,
                     value=1,
                     disabled=st.session_state.get("form_submitted", False),
                 )
-        
+
                 applicant_email = st.text_input(
                     label="신청자 이메일을 입력하세요",
                     value="minjigobi@gmail.com",
                     disabled=st.session_state.get("form_submitted", False),
                 )
-        
+
                 submitted = st.form_submit_button(
                     label="신청하기",
                     disabled=st.session_state.get("locked", False),
@@ -334,7 +334,7 @@ def main_page(docent_bot: DocentBot):
                     if not re.match(email_pattern, applicant_email):
                         st.error("유효한 이메일 주소를 입력해주세요.")
                         return
-        
+
                     st.session_state.form_submitted = True
                     application = {
                         "program": program,
@@ -353,7 +353,7 @@ def main_page(docent_bot: DocentBot):
                             "MCP 서버에 연결 중입니다. 연결이 완료되면 다시 '신청하기'를 눌러 주세요."
                         )
                         return
-        
+
                     if (
                         mcp_connection_future.done()
                         and mcp_connection_future.exception()
@@ -362,16 +362,15 @@ def main_page(docent_bot: DocentBot):
                             f"MCP 서버 연결 실패: {str(mcp_connection_future.exception())}"
                         )
                         return
-        
+
                     run_async(resv_agent.make_reservation(application))
                     st.rerun()
                 else:
                     st.markdown(
                         "🔔문화해설사님이 배정되면 이메일로 알려드립니다.  \n🚨부득이한 사정으로 취소해야 할 경우 방문일 전일까지 배정된 문화해설사님의 이메일로 통지 부탁드립니다."
                     )
-                    
-    
-    def chat_area():
+
+    def chat_area() -> None:
         for message in docent_bot.get_conversation():
             with st.chat_message(message["role"], avatar=avatar[message["role"]]):
                 st.markdown(message["content"])
@@ -399,7 +398,7 @@ elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
     with st.chat_message("assistant", avatar=avatar["assistant"]):
         st.markdown(docent_bot.greet())
-        
+
     st.session_state.status = "guide_active"
     on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()

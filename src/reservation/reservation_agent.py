@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 SMITHERY_API_KEY = os.getenv("SMITHERY_API_KEY")
-SLACK_BOT_TOKEN  = os.getenv("SLACK_BOT_TOKEN")
+SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 
 slack_config = {
     "token": SLACK_BOT_TOKEN,
@@ -52,7 +52,7 @@ application_template = """
 """.strip()
 
 
-def modify_input_schema(input_schema):
+def modify_input_schema(input_schema) -> dict:
     if "properties" in input_schema:
         if "required" not in input_schema or not isinstance(
             input_schema["required"], list
@@ -93,7 +93,7 @@ class ReservationAgent:
         self.tools: list[dict] = []
         self.reply_ts: dict[str, float] = {}
 
-    async def connect_server(self, timeout: float = 30.0):
+    async def connect_server(self, timeout: float = 30.0) -> None:
         try:
             self.session = await self.exit_stack.enter_async_context(
                 Client(config, timeout=timeout)
@@ -105,7 +105,7 @@ class ReservationAgent:
             traceback.print_exc()
             raise RuntimeError(str(e))
 
-    async def setup_context(self):
+    async def setup_context(self) -> None:
         try:
             mcp_tools = await self.session.list_tools()
             self.tools = [
@@ -124,7 +124,7 @@ class ReservationAgent:
             traceback.print_exc()
             raise e
 
-    def _call_llm(self, messages: list[dict]):
+    def _call_llm(self, messages: list[dict]) -> dict:
         response = claude.create_tool_response(
             messages=messages,
             temperature=0.0,
@@ -137,7 +137,7 @@ class ReservationAgent:
 
     async def _polling_result(
         self, application_id: str, tool_name, tool_args: str, tool_result: dict
-    ):
+    ) -> str | dict:
         for _ in range(1, 10):
             message = json.loads(tool_result[0].text)["messages"]
             if (
@@ -150,7 +150,9 @@ class ReservationAgent:
             tool_result = await self.session.call_tool(tool_name, tool_args)
         return "응답한 문화해설사가 없습니다. 요청 건 취소가 필요합니다."
 
-    async def _delegate_to_slackbot(self, application_id: str, messages: list[dict]):
+    async def _delegate_to_slackbot(
+        self, application_id: str, messages: list[dict]
+    ) -> dict:
         response = self._call_llm(messages)
         tries = 0
         while True:
@@ -192,7 +194,7 @@ class ReservationAgent:
                 raise ValueError("Too many tries")
             tries += 1
 
-    async def make_reservation(self, application: dict):
+    async def make_reservation(self, application: dict) -> None:
         application_without_email = {}
         for k, v in application.items():
             if k == "applicant_email":
@@ -226,7 +228,7 @@ class ReservationAgent:
             traceback.print_exc()
             raise e
 
-    async def cleanup(self):
+    async def cleanup(self) -> None:
         try:
             await self.exit_stack.aclose()
             logger.info("MCP 서버 연결 해제")
@@ -236,7 +238,7 @@ class ReservationAgent:
             raise e
 
 
-async def main():
+async def main() -> None:
     agent = ReservationAgent()
     await agent.connect_server()
     await agent.make_reservation(

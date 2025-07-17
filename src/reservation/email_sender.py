@@ -31,7 +31,7 @@ email_fail_template = """
 """.strip()
 
 
-def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str):
+def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str) -> None:
     recipients = [receiver, cc]
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -50,7 +50,7 @@ def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str):
     logging.info("메일 전송 완료")
 
 
-def send_success_mail(application_form: str, receiver: str, bot_response: dict):
+def send_success_mail(application_form: str, receiver: str, bot_response: dict) -> None:
     body = email_success_template.format(
         application_form=application_form,
         docent_name=bot_response["docent_name"],
@@ -62,7 +62,7 @@ def send_success_mail(application_form: str, receiver: str, bot_response: dict):
     send_mail(sender, receiver, cc, subject, body)
 
 
-def send_fail_mail(receiver: str, failure_message: str):
+def send_fail_mail(receiver: str, failure_message: str) -> None:
     body = email_fail_template.format(failure_message=failure_message)
     sender = os.getenv("SENDER_EMAIL")
     subject = "문화해설사 예약이 실패했습니다."
