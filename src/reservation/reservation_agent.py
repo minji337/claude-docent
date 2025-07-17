@@ -79,15 +79,6 @@ class Report(BaseModel):
     docent_email: Optional[str] = Field(description="예약된 경우 도슨트의 이메일")
 
 
-class Report(BaseModel):
-    is_success: bool = Field(description="예약 성공 여부")
-    failure_message: Optional[str] = Field(description="예약 실패 사유")
-    thread_ts: str = Field(description="스레드의 timestamp")
-    channel_id: str = Field(description="스레드가 있는 채널의 id")
-    docent_name: Optional[str] = Field(description="예약된 경우 도슨트의 이름")
-    docent_email: Optional[str] = Field(description="예약된 경우 도슨트의 이메일")
-
-
 report_reservation = {
     "name": "report_reservation",
     "description": "예약 작업 수행 결과",

@@ -43,13 +43,6 @@ revisit_instruction = """
 </system_command>
 """.strip()
 
-_tool_system_prompt = """
-다음 넷 중 하나의 CASE만 선택하세요.
-CASE-1. '시대'와 '장르'로 검색 요청하는 경우 search_relics_by_period_and_genre를 사용할 것.
-CASE-2. 역사적 사실에 대해 질의할 때만 search_historical_facts를 사용할 것.
-CASE-3. 위의 두 가지 도구 모두 사용하지 않는 경우에 한해 needs_relic_image 사용할 것.
-""".strip()
-
 tool_system_prompt = """
 다음 넷 중 하나의 CASE만 선택하세요.
 
