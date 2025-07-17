@@ -13,6 +13,9 @@ from .tools import use_tools, ToolData
 logger = logging.getLogger(__name__)
 
 
+# test...
+
+
 class ExceptionHandler:
 
     @staticmethod
@@ -43,7 +46,7 @@ class ExceptionHandler:
 
 class InstructionHandler:
 
-    #first_present_index = 0
+    # first_present_index = 0
     first_present_index = 1
 
     def __init__(self):
@@ -74,9 +77,8 @@ class InstructionHandler:
             }
         )
 
-
-    def add_guide(self, relics: Relics, messages: list):    
-        self._remove_before_guide(messages)    
+    def add_guide(self, relics: Relics, messages: list):
+        self._remove_before_guide(messages)
         guide_instruction_prompt = guide_instruction.format(
             label=relics.current["label"],
             content=relics.current["content"],
@@ -135,7 +137,7 @@ class DocentBot:
         self.messages = []
         self.relics = Relics()
         self.instruction = InstructionHandler()
-        self.instruction.add_museum_info(self.messages)	
+        self.instruction.add_museum_info(self.messages)
 
     def greet(self):
         return self.greeting_message
@@ -144,7 +146,7 @@ class DocentBot:
         self.instruction.add_guide(self.relics, self.messages)
         response_message = claude.create_response_text(messages=self.messages)
         self.messages.append({"role": "assistant", "content": response_message})
-        self.relics.set_presented(True)    
+        self.relics.set_presented(True)
 
     def move(self, is_next: bool):
         if is_next:
@@ -158,7 +160,7 @@ class DocentBot:
             except ValueError as e:
                 ExceptionHandler.underflow(self.messages, self.relics)
 
-        if not self.relics.is_presented(): 
+        if not self.relics.is_presented():
             self._present_relic()
 
     # 전시물 검색 실습용
@@ -177,7 +179,7 @@ class DocentBot:
     #         response_message = claude.create_response_text(messages=self.messages)
     #         self.messages.append({"role": "assistant", "content": response_message})
     #     return response_message
-    
+
     # 역사적 사실 검색 실습용
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
@@ -210,14 +212,14 @@ class DocentBot:
                 self.messages.append({"role": "assistant", "content": response_message})
             case _:
                 response_message = claude.create_response_text(messages=self.messages)
-                self.messages.append({"role": "assistant", "content": response_message})                
-        
+                self.messages.append({"role": "assistant", "content": response_message})
+
         return references, response_message
 
     @property
     def museum_info_message(self):
         return [self.messages[0]]
-    
+
     def get_conversation(self):
         conversation = []
         for message in self.messages[1:]:
@@ -230,4 +232,3 @@ class DocentBot:
                 continue
             conversation.append({"role": message["role"], "content": text_message})
         return conversation
-
