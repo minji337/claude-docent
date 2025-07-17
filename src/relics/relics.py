@@ -12,7 +12,6 @@ class RelicsLoader:
             database = json.load(f)
         for key, value in database.items():
             value["img_path"] = str(
-                #Path("data", "database", key, "image.jpg")
                 Path("data", "database", key, Path(value["img"]).name)
             )
             value["title"] = f"{value['label']['명칭']} ({key})"
