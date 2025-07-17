@@ -216,7 +216,6 @@ def main_page(docent_bot: DocentBot):
                 if st.button("이전", use_container_width=True):
                     logger.info("이전 버튼이 클릭되었습니다.")
                     on_progress(lambda: docent_bot.move(is_next=False))
-                    docent_bot.move(is_next=False)
                     st.session_state.relic_card = docent_bot.relics.current_to_card()
                     st.rerun()
 

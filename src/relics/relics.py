@@ -1,23 +1,30 @@
 from pathlib import Path
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class RelicsLoader:
 
-    def __init__(self):        
-        self.database = self.load_database()        
+    def __init__(self):
+        self.database = self.load_database()
 
     def load_database(self):
-        file_path = Path("data") / "database" / "relic_index.json"
-        with open(file_path, encoding="utf-8") as f:
-            database = json.load(f)
-        for key, value in database.items():
-            value["img_path"] = str(
-                #Path("data", "database", key, "image.jpg")
-                Path("data", "database", key, Path(value["img"]).name)
-            )
-            value["title"] = f"{value['label']['명칭']} ({key})"
-        self.ids = list(database.keys())
-        return database
+        try:
+            file_path = Path("data") / "database" / "relic_index.json"
+            with open(file_path, encoding="utf-8") as f:
+                database = json.load(f)
+            for key, value in database.items():
+                value["img_path"] = str(
+                    Path("data", "database", key, Path(value["img"]).name)
+                )
+                value["title"] = f"{value['label']['명칭']} ({key})"
+            self.ids = list(database.keys())
+            return database
+        except Exception as e:
+            logging.error(f"[load_database error] {e}")
+            raise e
 
     def get_database(self):
         return self.database.copy(), self.ids

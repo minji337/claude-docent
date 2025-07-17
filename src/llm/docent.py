@@ -3,10 +3,8 @@ from relics import Relics, SearchedRelics
 from utils import get_base64_data, leaflet_id, guide_program_id
 import logging
 from .prompt_templates import (
-    system_prompt,
     guide_instruction,
     revisit_instruction,
-    history_based_prompt,
     museum_info_prompt,
 )
 from .llm import claude_4 as claude
@@ -184,8 +182,8 @@ class DocentBot:
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
-        tool_data: Optional[ToolData] = None
-        message_dict: Optional[dict[str, str]] = None
+        tool_data: ToolData | None = None
+        message_dict: dict[str, str] | None = None
         conversation = self.get_conversation()
         tool_data, message_dict = use_tools(
             conversation,
