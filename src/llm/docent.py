@@ -20,7 +20,7 @@ class DocentBot:
         self.relics = Relics()
         self.last_guide_id = ""
         
-    def _create_response(self):
+    def _create_response(self) -> str:
         try:
             response = client.messages.create(
                 max_tokens=2048,
@@ -34,7 +34,7 @@ class DocentBot:
             logger.info(f"Error: {str(e)}")
             raise e
 
-    def _add_guide_instruction(self):
+    def _add_guide_instruction(self) -> None:
         guide_instruction_prompt = guide_instruction.format(
             label=self.relics.current["label"],
             content=self.relics.current["content"],
@@ -57,28 +57,28 @@ class DocentBot:
         )
         self.last_guide_id = self.relics.current_id
 
-    def _present_relic(self):
+    def _present_relic(self) -> None:
         self._add_guide_instruction()
         response_message = self._create_response()
         self.messages.append({"role": "assistant", "content": response_message})
         self.relics.set_presented(True)
 
-    def _check_and_add(self):
+    def _check_and_add(self) -> None:
         if self.last_guide_id == self.relics.current_id:
             return
         self._add_guide_instruction()
         self.messages.append({"role": "user", "content": revisit_instruction})
 
-    def _overflow(self):
+    def _overflow(self) -> None:
         self.messages.append(
             {"role": "assistant", "content": "준비한 작품을 모두 소개했습니다."}
         )
 
-    def _underflow(self):
+    def _underflow(self) -> None:
         self.messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
         self.relics.index = 0
 
-    def move(self, is_next: bool):
+    def move(self, is_next: bool) -> None:
         if is_next:
             try:
                 self.relics.next()

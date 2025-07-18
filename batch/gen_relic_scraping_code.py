@@ -1,7 +1,11 @@
 base_url = "https://www.museum.go.kr/MUSEUM/contents/M0504000000.do"
 image_file_sample = """
-<a href="javascript:;" class="swiper-slide" style="background:url('/relic_image//PS01001001/bon001/2016/1124093013018/700/bon001958-000-0001.jpg') no-repeat center; background-size:cover">감산사 석조미륵보살입상 이미지 1 보기</a>
-<a href="javascript:;" class="swiper-slide" style="background:url('/relic_image//PS01001001/bon001/2017/0508160735009/700/bon001958-00-01.jpg') no-repeat center; background-size:cover">감산사 석조미륵보살입상 이미지 2 보기</a>
+<div class="thumbs-area">
+    <div class="swiper-container gallery-thumbs">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <img src="/relic_image//PS01001001/bon001/2016/1124093013018/700/bon001958-000-0001.jpg" alt="감산사 석조미륵보살입상 이미지 1 보기">
+            </div>
 ...중략...
 """
 label_sample = """
@@ -71,7 +75,7 @@ relic_index_sample =  """
 {
     "348": {
         "url": "https://www.museum.go.kr/MUSEUM/contents/M0504000000.do?schM=view&searchId=treasure&relicId=348",
-        "img": "/relic_image/PS01001001/bon001/2016/1124093013018/bon001958-000-0001.jpg",
+        "img": "/relic_image//PS01001001/bon001/2016/1124093013018/700/bon001958-000-0001.jpg",
         "label": {
             "명칭": "감산사 석조미륵보살입상",
             "다른명칭": "국보 경주 감산사 석조 미륵보살 입상(1962), 慶州 甘山寺 石造彌勒菩薩立像",
@@ -121,7 +125,7 @@ prompt = f"""
 2. [base_url]에 “query”를 결합해서 URL을 만듭니다.
 3. url에 접근하여 HTML을 수신받은 후 Beautifulsoup 파서를 통해  [relic_data_sample] 형식의 데이터를 만듭니다. 
     - 이때 Key는 relicId로 합니다.
-    - [relic_index_sample] 데이터 구성은 [html_xxx_sample] 정보를 참조하되, 이미지 파일은 첫번째 <a> 태그의 정보를 가져옵니다. 
+    - [relic_index_sample] 데이터 구성은 [html_xxx_sample] 정보를 참조하되, 이미지 파일은 <div class="swiper-container gallery-thumbs">태그 내의 첫 번째 이미지 정보를 가져옵니다. 
 4. 결과는 relic_index_json 변수에 담습니다.
 5. 서버 부하 방지를 위해 한 번 순회시마다 1초의 휴지를 둡니다.
 </JSON 정보 추출 함수 작성 지침>       

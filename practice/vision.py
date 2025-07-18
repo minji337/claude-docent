@@ -25,7 +25,8 @@ def get_base64_data(file_path):
     base64_data = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return base64_data
 
-image_file = "data/database/348/image.jpg"
+image_file = "data/database/348/bon001958-000-0001.jpg"
+
 
 client = anthropic.Anthropic()
 response = client.messages.create(

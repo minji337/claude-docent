@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 import base64
 
-def get_base64_data(file_path):
+def get_base64_data(file_path) -> str:
     # 이미지를 한 번만 열기
     img = Image.open(file_path)
     buffer = BytesIO()
