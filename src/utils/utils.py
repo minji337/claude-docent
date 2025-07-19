@@ -5,7 +5,7 @@ from io import BytesIO
 import base64
 import json
 
-def get_base64_data(file_path):
+def get_base64_data(file_path) -> str:
     img = Image.open(file_path)
     buffer = BytesIO()
     img.save(buffer, format=img.format or "JPEG")  # 원본 포맷 유지 또는 JPEG 기본값

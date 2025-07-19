@@ -25,14 +25,14 @@ class Similarity:
     doc: str
     score: float = 0
 
-class Collecton:
+class Collection:
 
     def __init__(self, name: str):
         self.name = name
         self.file_path = project_root / "data" / "vector_store" / f"{name}"
         self.index: dict[str, DocEmbedding] = {}
 
-    def load(self) -> "Collecton":
+    def load(self) -> "Collection":
         with open(f"{self.file_path}_meta.json", "r", encoding="utf-8") as f:
             docs_list = json.load(f)
 
@@ -45,10 +45,10 @@ class Collecton:
 
         return self        
 
-    def add_doc(self, id: str, doc: str):
+    def add_doc(self, id: str, doc: str) -> None:
         self.index[id] = DocEmbedding(id=id, doc=doc)
 
-    def build(self):
+    def build(self) -> None:
         doc_embeddings_all = list(self.index.values())
         doc_embeddings_chunks = [
             doc_embeddings_all[i:i+100] 
@@ -71,7 +71,7 @@ class Collecton:
         with open(f"{self.file_path}_meta.json", "w", encoding="utf-8") as f:
             json.dump(doc_all_list, f, ensure_ascii=False, indent=2)
 
-    def query(self, query: str, cutoff=0.4, top_k: int = 60) -> dict[int, Similarity]:
+    def query(self, query: str, cutoff=0.4, top_k: int = 60) -> list[Similarity]:
         query_embedding = self._get_embeddings(query)[0]
         similarities: list[Similarity] = []
         for doc_embedding in self.index.values():
@@ -126,7 +126,7 @@ def get_rrf(
     return sorted(rrf_sim_dict.values(), key=lambda x: x.score, reverse=True)
 
 
-def filter_results(similarities: list[Similarity], query: str):
+def filter_results(similarities: list[Similarity], query: str) -> list[Similarity]:
 
     sim_dict: dict[str, Similarity] = {}
     for sim in similarities:
@@ -158,6 +158,6 @@ def filter_results(similarities: list[Similarity], query: str):
     return filtered_similarities
 
 
-title_collection = Collecton("title").load()
-content_collection = Collecton("content").load()
-description_collection = Collecton("description").load()
+title_collection = Collection("title").load()
+content_collection = Collection("content").load()
+description_collection = Collection("description").load()
