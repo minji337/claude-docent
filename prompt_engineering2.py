@@ -21,7 +21,7 @@ for i, system_prompt in enumerate(system_prompts, 1):
         max_tokens=1024,
         system=system_prompt,
         messages=[
-            {"role": "user", 'content': f"당신을 소가해세요. (시도 {i})"},
+            {"role": "user", 'content': f"당신을 소개하세요. (시도 {i})"},
         ]
     )
     print(f"시도 {i}:")

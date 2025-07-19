@@ -1,0 +1,87 @@
+<movies>
+  <movie>
+    <title>파묘</title>
+    <director>장재현</director>
+    <release_date>2024-02-22</release_date>
+    <total_audience>11,913,891</total_audience>
+    <outline>초자연적인 사건에 시달리는 로스앤젤레스의 부유한 가족은 아기를 보호하기 위해 젊고 재능 있는 두 무당인 화림과 봉길에게 도움을 요청한다. 화림은 ‘무덤의 부름’이라 불리는 가족을 괴롭히는 조상의 사악한 존재를 감지하고, 풍수사 상덕과 장의사 영근의 도움을 받아 무덤을 파헤쳐 조상을 달래려 한다. 그러나 한국 시골 마을의 수상한 장소에서 발견된 무덤을 발굴하자, 그 밑에 묻혀 있던 사악한 힘이 풀려나고 만다</outline>
+  </movie>
+  <movie>
+    <title>범죄도시4</title>
+    <director>허명행</director>
+    <release_date>2024-04-24</release_date>
+    <total_audience>11,501,621</total_audience>
+    <outline>신종 마약 사건 3년 뒤, 괴물형사 마석도와 서울 광수대는 배달앱을 이용한 마약 판매 사건을 수사하던 중 수배 중이던 앱 개발자가 필리핀에서 사망한 사건이 대규모 온라인 불법 도박 조직과 연관되었음을 알아낸다. 필리핀에 거점을 둔 특수부대 출신 빌런 백창기와 한국에서 더 큰 판을 짜고 있던 천재 CEO 장동철이 배후로 드러나고, 마석도는 더 커진 범죄 판을 잡기 위해 장이수와 협력하며 광역수사대와 사이버수사대까지 합류시켜 범죄 소탕 작전에 나선다</outline>
+  </movie>
+  <movie>
+    <title>인사이드 아웃 2</title>
+    <director>켈시 맨</director>
+    <release_date>2024-06-12</release_date>
+    <total_audience>8,796,449</total_audience>
+    <outline>13살이 된 라일리가 사춘기에 접어들면서 머릿속 감정 컨트롤 본부에 ‘불안’, ‘당황’, ‘따분’, ‘부럽’ 등 새로운 감정들이 나타나게 된다. 기존의 기쁨, 슬픔, 버럭, 까칠, 소심 감정과 새로 등장한 감정들이 뒤섞이며 라일리의 내면에서 일어나는 감정의 변화와 갈등을 생생하게 그려낸 이야기이다</outline>
+  </movie>
+  <movie>
+    <title>베테랑2</title>
+    <director>류승완</director>
+    <release_date>2024-09-13</release_date>
+    <total_audience>7,524,454</total_audience>
+    <outline>전설적인 베테랑 형사 서도철(황정민)은 새롭게 합류한 막내 형사 박선우(정해인)와 함께 연쇄살인 사건을 추적한다. 정의감 넘치는 형사들이 팀원들과 힘을 합쳐 거대 범죄 조직에 맞서며, 한층 확장된 액션과 유머 속에 통쾌한 수사를 펼치는 이야기이다</outline>
+  </movie>
+  <movie>
+    <title>파일럿</title>
+    <director>김한결</director>
+    <release_date>2024-07-31</release_date>
+    <total_audience>4,716,737</total_audience>
+    <outline>스타 파일럿에서 하루아침에 직장을 잃은 한정우(조정석)는 생계를 위해 여장남자 승무원으로 변장해 재취업에 도전한다. 낯선 모습으로 새로운 직장에 들어간 그는 동료들과 다양한 해프닝을 겪으며 좌충우돌하는데, 결국 진정한 자신을 찾아가는 과정을 그린 유쾌한 코미디 movie이다</outline>
+  </movie>
+  <movie>
+    <title>웡카</title>
+    <director>폴 킹</director>
+    <release_date>2024-01-31</release_date>
+    <total_audience>3,531,717</total_audience>
+    <outline>“세상에서 가장 달콤한 여정은 꿈에서부터 시작된다!” 마법사이자 초콜릿 메이커인 젊은 윌리 웡카(티모시 샬라메)의 꿈은 디저트의 성지 ‘달콤 백화점’에 자신만의 초콜릿 가게를 여는 것이다. 가진 것이라곤 낡은 모자와 가득한 꿈, 그리고 단돈 12소버린뿐이지만, 특별한 마법의 초콜릿으로 사람들의 마음을 사로잡을 자신이 있다. 그러나 초콜릿 업계를 장악한 거대 카르텔과 뜻밖의 장애물들이 웡카의 앞을 가로막는데…</outline>
+  </movie>
+  <movie>
+    <title>탈주</title>
+    <director>이종필</director> 
+    <release_date>2024-07-03</release_date>
+    <total_audience>2,561,202</total_audience>
+    <outline>내일이 있는 삶을 꿈꾸며 남쪽으로 향하는 북한군 병사와, 그를 목숨 걸고 막으려는 보위부 장교의 추격전을 그린 작품이다</outline>
+  </movie>
+  <movie>
+    <title>듄: 파트2</title>
+    <director>드니 빌뇌브</director>
+    <release_date>2024-02-28</release_date>
+    <total_audience>2,016,202</total_audience>
+    <outline>사막 행성 아라키스의 운명을 건 전쟁이 계속된다. 폴 아트레이디스(티모시 샬라메)는 사랑하는 사람과 자신의 민족을 지키기 위해 예언된 메시아로서 거대한 모래벌레와 사막 전사들을 이끌고 황제와 우주 사상 최강의 적들과 맞선다. 더욱 거대한 스케일과 심화된 드라마로 펼쳐지는 SF 서사의 두 번째 장이자 클라이맥스이다</outline>
+  </movie>
+  <movie>
+    <title>에이리언: 로물루스</title>
+    <director>페데 알바레즈</director>
+    <release_date>2024-08-14</release_date>
+    <total_audience>2,002,033</total_audience>
+    <outline>SF 호러 명작 ‘에이리언’ 시리즈의 프리퀄로, 우주 식민지 개척을 위해 외딴 행성에 파견된 젊은 대원들이 알 수 없는 외계 생명체의 습격에 하나둘씩 목숨을 잃는다. 살아남은 대원들은 밀폐된 우주 기지 안에서 상상조차 할 수 없는 공포와 마주하며 극한의 생존 사투를 벌이게 된다</outline>
+  </movie>
+  <movie>
+    <title>데드풀과 울버린</title>
+    <director>숀 레비</director>
+    <release_date>2024-07-24</release_date>
+    <total_audience>1,977,010</total_audience>
+    <outline>돌연변이 용병 히어로 ‘데드풀’(라이언 레이놀즈)이 차원을 넘나드는 대혼란 속에서 전설적인 엑스맨 ‘울버린’(휴 잭맨)과 조우한다. 티격태격하는 두 히어로는 강력한 새로운 적에 맞서기 위해 어쩔 수 없이 힘을 합치게 되고, 유쾌한 입담과 거침없는 액션으로 가득한 모험이 펼쳐진다</outline>
+  </movie>
+</movies>
+
+<instructions>
+1. <user/>가 묻는 영화 제목이 <movies/>의 <title/>에 존재하는지 확인합니다.
+2. 존재하면 <response_format/>에 따라 응답합니다.
+3. 존재하지 않으면 “해당 영화는 존재하지 않습니다.”라고 응답합니다.
+</instructions>
+
+<response_format>
+<title/>은 <director/> 감독이 만든 영화로 <release_date/>에 개봉했으며, 누적 관객수는  <total_audience/>입니다. 줄거리는 다음과 같습니다.
+줄거리: <outline/>
+</response_format>
+
+<user>
+{{user_message}}
+</user>
