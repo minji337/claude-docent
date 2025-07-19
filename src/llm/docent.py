@@ -7,21 +7,21 @@ class DocentBot:
         self.messages = []
         self.relics = Relics()
 
-    def _present_relic(self):
+    def _present_relic(self) -> None:
         response_message = f" 이 작품은 {self.relics.current['title']}입니다."
         self.messages.append({"role": "assistant", "content": response_message})
         self.relics.set_presented(True)
 
-    def _overflow(self):
+    def _overflow(self) -> None:
         self.messages.append(
             {"role": "assistant", "content": "준비한 작품울 모두 소개했습니다."}
         )
 
-    def _underflow(self):
+    def _underflow(self) -> None:
         self.messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
         self.relics.index = 0
 
-    def move(self, is_next: bool):
+    def move(self, is_next: bool) -> None:
         if is_next:
             try:
                 self.relics.next()
@@ -44,7 +44,7 @@ class DocentBot:
         self.messages.append({"role": "assistant", "content": response_message})
         return response_message
 
-    def get_conversation(self):
+    def get_conversation(self) -> list[dict[str, str]]:
         conversation = []
         for message in self.messages:
             text_message = message["content"].strip()

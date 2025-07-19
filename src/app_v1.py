@@ -100,7 +100,7 @@ st.session_state.relics = [
 
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
-def init_page():
+def init_page() -> None:
     # 사이드바 설정
     with st.sidebar:
         st.markdown(how_to_use)
@@ -133,9 +133,9 @@ def init_page():
             st.rerun()
 
 
-def main_page():
+def main_page() -> None:
 
-    def side_bar():
+    def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
 

@@ -8,7 +8,7 @@ class Relics:
         self.index = -1
         self.presented: set[str] = set()
 
-    def _load_database(self):
+    def _load_database(self) -> tuple[dict, list]:
         database = {
             "1": {
                 "header": "2점 중 1번째 이미지",
@@ -27,19 +27,19 @@ class Relics:
         return database, ids
 
     @property
-    def current_id(self):
+    def current_id(self) -> str:
         return self.ids[self.index]
 
     @property
-    def current(self):
+    def current(self) -> dict:
         current_relic = self.database[self.current_id]
         return current_relic
 
-    def next(self):
+    def next(self) -> dict:
         self.index += 1
         return self.current
 
-    def previous(self):
+    def previous(self) -> dict:
         if self.index == 0:
             raise ValueError("현재 첫 번째 작품을 보고 있습니다.")
         else:
@@ -47,10 +47,10 @@ class Relics:
         return self.current
 
     @property
-    def header(self):
+    def header(self) -> str:
         return f"{len(self.database)}점 중 {self.index + 1}번째 전시물입니다."
 
-    def set_presented(self, value: bool = True):
+    def set_presented(self, value: bool = True) -> None:
         if value:
             self.presented.add(self.current_id)
         else:
@@ -59,7 +59,7 @@ class Relics:
     def is_presented(self, id: str | None = None) -> bool:
         return (id or self.current_id) in self.presented
 
-    def current_to_card(self):
+    def current_to_card(self) -> dict:
         return {
             "header": self.header,
             "img_path": self.current["img_path"],
