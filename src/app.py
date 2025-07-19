@@ -131,7 +131,7 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
-def on_progress(func) -> tuple:
+def on_progress(func) -> str | None:
     overlay_placeholder = st.empty()
     overlay_placeholder.markdown(
         """
