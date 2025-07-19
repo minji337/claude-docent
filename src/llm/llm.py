@@ -1,4 +1,5 @@
 from anthropic import Anthropic
+from anthropic.types import Message
 from .prompt_templates import (
     system_prompt as default_system_prompt,
     tool_system_prompt as default_tool_system_prompt,
@@ -49,7 +50,7 @@ class LLM:
         tool_choice: dict[str, str] = {"type": "auto"},
         tool_system_prompt: str | None = None,
         stop_sequences: list[str] = [],
-    ) -> dict:
+    ) -> Message:
 
         try:
             response = self.client.messages.create(

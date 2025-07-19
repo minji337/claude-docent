@@ -139,7 +139,7 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
-def on_progress(func) -> tuple:
+def on_progress(func) -> tuple[list, str] | None:
     overlay_placeholder = st.empty()
     overlay_placeholder.markdown(
         """
@@ -176,7 +176,7 @@ def run_async(coro) -> Future:
 
 
 @st.cache_resource(show_spinner=False)
-def get_reservation_agent() -> tuple:
+def get_reservation_agent() -> tuple[ReservationAgent, Future]:
     agent = ReservationAgent()
     future = run_async(agent.connect_server())
     return agent, future
