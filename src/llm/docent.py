@@ -3,10 +3,8 @@ from relics import Relics, SearchedRelics
 from utils import get_base64_data
 import logging
 from .prompt_templates import (
-    system_prompt,
     guide_instruction,
     revisit_instruction,
-    history_based_prompt 
 )
 from .llm import claude_4 as claude
 from .tools import use_tools, ToolData
@@ -17,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ExceptionHandler:
 
     @staticmethod
-    def overflow(messages: list, relics: Relics):
+    def overflow(messages: list, relics: Relics) -> Relics:
         if isinstance(relics, SearchedRelics):
             messages.append(
                 {
@@ -47,7 +45,7 @@ class InstructionHandler:
     def __init__(self):
         self.last_guide_id = ""
 
-    def add_guide(self, relics: Relics, messages: list):    
+    def add_guide(self, relics: Relics, messages: list) -> None:    
         self._remove_before_guide(messages)    
         guide_instruction_prompt = guide_instruction.format(
             label=relics.current["label"],
@@ -82,7 +80,7 @@ class InstructionHandler:
                 messages.pop(idx)
                 break
 
-    def check_and_add(self, relics: Relics, messages: list):
+    def check_and_add(self, relics: Relics, messages: list) -> None:
         if self.last_guide_id == relics.current_id:
             return
         self.add_guide(relics, messages)
@@ -102,16 +100,16 @@ class DocentBot:
         self.relics = Relics()
         self.instruction = InstructionHandler()
 
-    def greet(self):
+    def greet(self) -> str:
         return self.greeting_message
 
-    def _present_relic(self):
+    def _present_relic(self) -> None:
         self.instruction.add_guide(self.relics, self.messages)
         response_message = claude.create_response_text(messages=self.messages)
         self.messages.append({"role": "assistant", "content": response_message})
         self.relics.set_presented(True)    
 
-    def move(self, is_next: bool):
+    def move(self, is_next: bool) -> None:
         if is_next:
             try:
                 self.relics.next()
@@ -147,8 +145,8 @@ class DocentBot:
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
-        tool_data: Optional[ToolData] = None
-        message_dict: Optional[dict[str, str]] = None
+        tool_data: ToolData | None = None
+        message_dict: dict[str, str] | None = None
         conversation = self.get_conversation()
         tool_data, message_dict = use_tools(
             conversation,
@@ -172,7 +170,7 @@ class DocentBot:
         return references, response_message
 
     
-    def get_conversation(self):
+    def get_conversation(self) -> list[dict[str, str]]:
         conversation = []
         for message in self.messages:
             if isinstance(message["content"], list):

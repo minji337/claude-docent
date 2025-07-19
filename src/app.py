@@ -94,7 +94,7 @@ st.markdown(
             box-shadow: 2px 2px 10px rgba(0,0,0,0);
         }
 
-       
+
 
     </style>
     """,
@@ -131,7 +131,7 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
-def on_progress(func):
+def on_progress(func) -> tuple[list, str] | None:
     overlay_placeholder = st.empty()
     overlay_placeholder.markdown(
         """
@@ -150,7 +150,7 @@ def on_progress(func):
     return result
 
 
-def init_page():
+def init_page() -> None:
     # 사이드바 설정
     with st.sidebar:
         st.markdown(how_to_use)
@@ -185,9 +185,9 @@ def init_page():
             st.rerun()
 
 
-def main_page(docent_bot: DocentBot):
+def main_page(docent_bot: DocentBot) -> None:
 
-    def side_bar():
+    def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
 
@@ -216,7 +216,6 @@ def main_page(docent_bot: DocentBot):
                 if st.button("이전", use_container_width=True):
                     logger.info("이전 버튼이 클릭되었습니다.")
                     on_progress(lambda: docent_bot.move(is_next=False))
-                    docent_bot.move(is_next=False)
                     st.session_state.relic_card = docent_bot.relics.current_to_card()
                     st.rerun()
 
@@ -235,7 +234,7 @@ def main_page(docent_bot: DocentBot):
                 """,
                 unsafe_allow_html=True,
             )
-    
+
             st.markdown("---")
             st.markdown(how_to_use)
 
@@ -257,7 +256,7 @@ def main_page(docent_bot: DocentBot):
                     for title, url in references:
                         expander.markdown(f"- [{title}]({url})")
 
-    side_bar()
+s    side_bar()
     chat_area()
 
 
@@ -265,9 +264,6 @@ if "status" not in st.session_state:
     init_page()
 elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
-    with st.chat_message("assistant", avatar=avatar["assistant"]):
-        st.markdown(docent_bot.greet())
-        
     st.session_state.status = "guide_active"
     on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()

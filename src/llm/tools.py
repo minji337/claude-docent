@@ -70,7 +70,7 @@ def search_relics_by_period_and_genre(
     return results, message
 
 
-def search_historical_facts(query):
+def search_historical_facts(query) -> tuple[list, str]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
@@ -104,7 +104,6 @@ def search_historical_facts(query):
 #     return data, message_dict
 
 
-# 역사적 사실 검색 실습용
 class ToolData(TypedDict):
     type: Literal["relics", "facts"]
     items: dict | list[tuple[str, str] | bool]
