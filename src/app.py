@@ -131,7 +131,7 @@ st.session_state.relics = [
 avatar = {"assistant": "👩‍🦰", "user": "🧑🏻‍💻"}
 
 
-def on_progress(func):
+def on_progress(func) -> str | None:
     overlay_placeholder = st.empty()
     overlay_placeholder.markdown(
         """
@@ -150,7 +150,7 @@ def on_progress(func):
     return result
 
 
-def init_page():
+def init_page() -> None:
     # 사이드바 설정
     with st.sidebar:
         st.markdown(how_to_use)
@@ -185,9 +185,9 @@ def init_page():
             st.rerun()
 
 
-def main_page(docent_bot: DocentBot):
+def main_page(docent_bot: DocentBot) -> None:
 
-    def side_bar():
+    def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
 
@@ -216,7 +216,6 @@ def main_page(docent_bot: DocentBot):
                 if st.button("이전", use_container_width=True):
                     logger.info("이전 버튼이 클릭되었습니다.")
                     on_progress(lambda: docent_bot.move(is_next=False))
-                    docent_bot.move(is_next=False)
                     st.session_state.relic_card = docent_bot.relics.current_to_card()
                     st.rerun()
 
@@ -239,7 +238,7 @@ def main_page(docent_bot: DocentBot):
             st.markdown("---")
             st.markdown(how_to_use)
 
-    def chat_area():
+    def chat_area() -> None:
         for message in docent_bot.get_conversation():
             with st.chat_message(message["role"], avatar=avatar[message["role"]]):
                 st.markdown(message["content"])
