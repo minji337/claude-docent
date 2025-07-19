@@ -83,7 +83,7 @@ def search_relics_by_period_and_genre(
     return results, message
 
 
-def search_historical_facts(query):
+def search_historical_facts(query) -> tuple[list, str]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
@@ -97,27 +97,6 @@ def search_historical_facts(query):
     return references, tavily_response["answer"]
 
 
-# 전시물 검색 실습용
-# def use_tools(
-#     messages: list, database: dict
-# ) -> tuple[Optional[dict], Optional[Dict[str, str]]]:
-#     response = claude.create_tool_response(
-#         messages=messages,
-#         tools=tools,
-#     )
-#     if response.stop_reason != "tool_use":
-#         return None, None
-#     tool_content = next(
-#         content for content in response.content if content.type == "tool_use"
-#     )
-#     data, message_dict = None, None
-#     if tool_content.name == "search_relics_by_period_and_genre":
-#         data, message = search_relics_by_period_and_genre(tool_content.input, database)
-#         message_dict = {"role": "assistant", "content": message}
-#     return data, message_dict
-
-
-# 역사적 사실 검색 실습용
 class ToolData(TypedDict):
     type: Literal["relics", "facts", "needs_image"]
     items: dict | list[tuple[str, str] | bool]

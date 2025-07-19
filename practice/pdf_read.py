@@ -29,7 +29,7 @@ message = client.messages.create(
                 },
                 {
                     "type": "text",
-                    "text": "관림 시간을 알려주세요."
+                    "text": "관람 시간을 알려주세요."
                 }
             ]
         }
