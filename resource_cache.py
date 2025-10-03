@@ -26,7 +26,7 @@ def get_vocab_logits(param=None):
 user_input = st.number_input(label="'나는'에 대한 로짓값을 입력하세요.", value=0.01)
 
 st.write("# Bar Chart")
-vocab_logits = get_vocab_logits()  # (1)함수의 결괏값을 복사하여 반환받음.
-vocab_logits["나는"] = user_input  # (2)복사한 값을 변경함
-vocab_logits = get_vocab_logits()  # (3)함수의 결괏값을 다시 복사하여 반환받음.
+vocab_logits = get_vocab_logits()
+vocab_logits["나는"] = user_input
+vocab_logits = get_vocab_logits()
 st.bar_chart(vocab_logits)

@@ -50,7 +50,7 @@ if prompt := st.chat_input("메시지를 입력하세요."):
         response = ""
         try:
             response = client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model="claude-sonnet-4-5-20250929",
                 messages=[
                     {"role": message["role"], "content": message["content"]}
                     for message in st.session_state.messages
