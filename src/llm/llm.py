@@ -35,11 +35,8 @@ class LLM:
             raise e
 
 
-claude_3_7 = LLM(
-    model_name="claude-3-7-sonnet-20250219", system_prompt=default_system_prompt
-)
-claude_4 = LLM(
-    model_name="claude-sonnet-4-20250514", system_prompt=default_system_prompt
+claude_4_5 = LLM(
+    model_name="claude-sonnet-4-5-20250929", system_prompt=default_system_prompt
 )
 claude_3_5_haiku = LLM(
     model_name="claude-3-5-haiku-20241022", system_prompt=default_system_prompt

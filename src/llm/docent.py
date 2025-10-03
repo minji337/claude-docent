@@ -7,7 +7,7 @@ from .prompt_templates import (
     guide_instruction,
     revisit_instruction
 )
-from .llm import claude_4 as claude
+from .llm import claude_4_5 as claude
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class ExceptionHandler:
 
     @staticmethod
-    def overflow(messages: list, relics: Relics) -> Relics:        
+    def overflow(messages: list) -> None:        
         messages.append(
             {
                 "role": "assistant",
@@ -25,7 +25,7 @@ class ExceptionHandler:
         return relics
     
     @staticmethod
-    def underflow(messages: list, relics: Relics) -> None:
+    def underflow(messages: list) -> None:
         messages.append({"role": "assistant", "content": "첫 번째 작품입니다."})
         relics.index = 0
 
@@ -97,12 +97,12 @@ class DocentBot:
             try:
                 self.relics.next()
             except IndexError as e:
-                ExceptionHandler.overflow(self.messages, self.relics)
+                ExceptionHandler.overflow(self.messages)
         else:
             try:
                 self.relics.previous()
             except ValueError as e:
-                ExceptionHandler.underflow(self.messages, self.relics)
+                ExceptionHandler.underflow(self.messages)
 
         if not self.relics.is_presented(): 
             self._present_relic()
