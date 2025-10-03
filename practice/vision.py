@@ -30,7 +30,7 @@ image_file = "data/database/348/bon001958-000-0001.jpg"
 
 client = anthropic.Anthropic()
 response = client.messages.create(
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-5-20250929",
     max_tokens=1024,
     messages=[
         {

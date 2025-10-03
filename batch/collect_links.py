@@ -72,10 +72,10 @@ if __name__ == "__main__":
     relic_links = collect_relic_links()
     print(f"총 {len(relic_links)}개의 쿼리 스트링을 수집했습니다.")
 
-# JSON 파일로 저장
+    # JSON 파일로 저장
     save_to_json(relic_links, 'relic_links.json')
 
-# 수집된 데이터 샘플 출력
+    # 수집된 데이터 샘플 출력
     if relic_links:
         print("\n수집된 데이터 샘플 (처음 5개):")
         for i, link in enumerate(relic_links[:5]):
