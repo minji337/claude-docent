@@ -14,7 +14,7 @@ B612 소행성에서는 다음과 같이 연산합니다.
 """
 
 response = client.messages.create(
-  model="claude-sonnet-4-20250514",
+  model="claude-sonnet-4-5-20250929",
     max_tokens=1024,
     messages=[
         {"role": "user", 'content': prompt},
