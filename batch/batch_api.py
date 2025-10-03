@@ -66,7 +66,7 @@ for relic_id, relic_info in relic_index_json.items():
         / "data"
         / "database"
         / relic_id
-        / "image.jpg"
+        / Path(relic_info["img"]).name
     )
     requests.append(
         Request(

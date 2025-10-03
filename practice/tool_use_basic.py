@@ -75,7 +75,7 @@ client = anthropic.Anthropic()
 
 def request_tool_call(messages: list):
     response = client.messages.create(  
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=1024,
         tools=tools,
         tool_choice={"type": "auto"},
@@ -93,6 +93,8 @@ messages = [
 
 response = request_tool_call(messages)
 pprint(response.model_dump())
+
+print("*"*100)
 
 # if response.stop_reason == "tool_use":
 #     tool_content = next(content for content in response.content if content.type == "tool_use")
@@ -114,7 +116,7 @@ if response.stop_reason == "tool_use":
     func_name, args = tool_content.name, tool_content.input
     tool_result = tool_repository[func_name](**args)    
 print(tool_result)
-
+print("*"*100)
 
 messages.append({"role": "assistant", "content": response.content})
 messages.append(
@@ -131,7 +133,7 @@ messages.append(
 )
 response = request_tool_call(messages)
 print(response.content[0].text)
-
+print("*"*100)
 
 messages = [
 {
@@ -152,5 +154,5 @@ messages = [
 
 
 response = request_tool_call(messages)
-print(response.content[0].text)
+print(response.model_dump())
 

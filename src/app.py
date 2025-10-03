@@ -256,7 +256,7 @@ def main_page(docent_bot: DocentBot) -> None:
                     for title, url in references:
                         expander.markdown(f"- [{title}]({url})")
 
-s    side_bar()
+    side_bar()
     chat_area()
 
 
