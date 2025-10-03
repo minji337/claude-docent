@@ -14,7 +14,7 @@ headers = {
 
 # 요청 데이터 구성
 data = {
-    "model": "claude-sonnet-4-20250514",
+    "model": "claude-sonnet-4-5-20250929",
     "max_tokens": 1024,
     "messages": [{"role": "user", "content": "Hello, world"}],
 }

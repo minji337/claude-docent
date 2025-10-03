@@ -3,7 +3,7 @@ import anthropic
 client = anthropic.Anthropic()
 
 response = client.messages.create(
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-5-20250929",
     max_tokens=4000,
     thinking= {
         "type": "enabled",

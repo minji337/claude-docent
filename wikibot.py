@@ -12,7 +12,7 @@ messages = []
 for i, user_msg in enumerate(user_messages):
     messages.append({"role": "user", "content": user_msg})
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=1024,
         messages=messages,
         system=system_prompt,
