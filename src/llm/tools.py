@@ -40,13 +40,13 @@ tools = [
     },
     {
         "name": "search_historical_facts",
-        "description": "역사적 사실에 대한 사용자의 질문에 답히기 위해 사용",
+        "description": "역사적 사실에 대한 사용자의 질문에 답하기 위해 사용",
         "input_schema": {
             "type": "object",
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "웹 검색에 입력할 키워드를 3개 이내로 만들 것",
+                    "description": "웹 검색에 입력할 키워드를 만들 것",
                 },
             },
         },
@@ -74,34 +74,17 @@ def search_historical_facts(query) -> tuple[list, str]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
-        max_results=10,
-        search_depth="advanced",
-        include_answer="advanced",
+        max_results=5,
+        search_depth="advanced"
     )
+    logger.info(f"[query] {query}")
+    logger.info(f"[tavily_response] {tavily_response["answer"]}")
     references: list[tuple[str, str]] = []
+    contents: list[str] = []
     for result in tavily_response["results"][:3]:
         references.append((result["title"], result["url"]))
-    return references, tavily_response["answer"]
-
-
-# 전시물 검색 실습용
-# def use_tools(
-#     messages: list, database: dict
-# ) -> tuple[Optional[dict], Optional[Dict[str, str]]]:
-#     response = claude.create_tool_response(
-#         messages=messages,
-#         tools=tools,
-#     )
-#     if response.stop_reason != "tool_use":
-#         return None, None
-#     tool_content = next(
-#         content for content in response.content if content.type == "tool_use"
-#     )
-#     data, message_dict = None, None
-#     if tool_content.name == "search_relics_by_period_and_genre":
-#         data, message = search_relics_by_period_and_genre(tool_content.input, database)
-#         message_dict = {"role": "assistant", "content": message}
-#     return data, message_dict
+        contents.append(result["content"])
+    return references, contents
 
 
 class ToolData(TypedDict):
@@ -122,6 +105,7 @@ def use_tools(
     tool_content = next(
         content for content in response.content if content.type == "tool_use"
     )
+    logger.info(f"[tool_content] {tool_content}")
     tool_data, message_dict = None, None
     if tool_content.name == "search_relics_by_period_and_genre":
         data, message = search_relics_by_period_and_genre(tool_content.input, database)
@@ -135,11 +119,6 @@ def use_tools(
             "role": "user",
             "content": history_based_prompt.format(history_facts=message),
         }
-    # elif tool_content.name == "needs_relic_image":
-    #     tool_data: ToolData = {
-    #         "type": "needs_image",
-    #         "items": tool_content.input["is_image_needed"],
-    #     }
-    #     message_dict = None
     logger.info(f"[tool_data type] {tool_data['type']}")
+    logger.info(f"[message_dict] {message_dict}")
     return tool_data, message_dict
