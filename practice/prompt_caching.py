@@ -9,7 +9,7 @@ import anthropic
 client = anthropic.Anthropic()
 
 token_count = client.messages.count_tokens(
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-5-20250929",
     messages=[
         {        
             "role": "user",
@@ -18,7 +18,7 @@ token_count = client.messages.count_tokens(
     ]
 )
 print("토큰 수:",token_count.input_tokens)
-
+print("*"*100)
 
 system_prompt=[
   {
@@ -48,12 +48,11 @@ messages = []
 for num, user_message in enumerate(user_messages, start=1):
     messages.append(user_message)
     response = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=1024,
         temperature=0,   
-        system=system_prompt,    
+        system=system_prompt, 
         messages=messages
-
     )
     messages.append({"role": "assistant", "content": response.content[0].text})
     print(f"\n{num}번째 대화입니다.{"-"*100}")

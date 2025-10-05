@@ -11,9 +11,9 @@ import anthropic
 class Category(BaseModel):
     id: str = Field(description="전시물 id")
     image_description: str = Field(
-        description="입력된 텍스트 정보를 고려하지 않고 순수하게 이미지 외관만 묘사(최소 3문장)"
+        description="입력된 텍스트 정보를 고려하지 않고 순수하게 이미지 외관만 한국어로 묘사(최소 3문장)"
     )
-    nationality: str = Field(description="예: 한국, 중국, 일본")
+    nationality: str = Field(description="예: 한국, 중국, 일본") 
     period: str = Field(
         description="예: 신라, 고려, 조선. 단, 통일신라는 '신라'로 표기"
     )
@@ -55,7 +55,7 @@ tools = [
 ]
 
 client = anthropic.Anthropic()
-    
+
 category_data = []
 for relic_id, relic_info in relic_index_json.items():
     image_path = (
@@ -63,10 +63,10 @@ for relic_id, relic_info in relic_index_json.items():
         / "data"
         / "database"
         / relic_id
-        / "image.jpg"
+        / Path(relic_info["img"]).name
     )
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-sonnet-4-5-20250929",
         max_tokens=1024,
         temperature=0.3,
         tools=tools,
