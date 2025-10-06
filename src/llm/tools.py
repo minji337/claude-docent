@@ -78,7 +78,7 @@ def search_historical_facts(query) -> tuple[list, str]:
         search_depth="advanced"
     )
     logger.info(f"[query] {query}")
-    logger.info(f"[tavily_response] {tavily_response["answer"]}")
+    logger.info(f"[tavily_response] {tavily_response['answer']}")
     references: list[tuple[str, str]] = []
     contents: list[str] = []
     for result in tavily_response["results"]:

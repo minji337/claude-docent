@@ -124,24 +124,6 @@ class DocentBot:
         if not self.relics.is_presented(): 
             self._present_relic()
 
-    # 전시물 검색 실습용
-    # def answer(self, user_input: str) -> str:
-    #     self.instruction.check_and_add(self.relics, self.messages)
-    #     self.messages.append({"role": "user", "content": user_input})
-    #     searched_database, message_dict = use_tools(
-    #         self.get_conversation(),
-    #         self.relics.original_database,
-    #     )
-    #     if searched_database:
-    #         self.relics = SearchedRelics(searched_database, self.relics.original)
-    #         self.messages.append(message_dict)
-    #         response_message = message_dict["content"]
-    #     else:
-    #         response_message = claude.create_response_text(messages=self.messages)
-    #         self.messages.append({"role": "assistant", "content": response_message})
-    #     return response_message
-    
-    # 역사적 사실 검색 실습용
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
@@ -166,7 +148,8 @@ class DocentBot:
             case _:
                 response_message = claude.create_response_text(messages=self.messages)
                 self.messages.append({"role": "assistant", "content": response_message})                
-        
+
+        print("self.messages=>", self.messages)
         return references, response_message
 
     
