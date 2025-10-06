@@ -67,7 +67,7 @@ tools = [
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "웹 검색에 입력할 키워드를 3개 이내로 만들 것",
+                    "description": "웹 검색에 입력할 키워드를 만들 것",
                 },
             },
         },
