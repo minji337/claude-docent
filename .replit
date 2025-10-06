@@ -16,6 +16,18 @@ requiredFiles = [".replit", "replit.nix"]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
 
+# [[ports]]
+# localPort = 8000
+# externalPort = 80
+
+# [[ports]]
+# localPort = 8502
+# externalPort = 3000
+
+Streamlit Test
 [[ports]]
-localPort = 8000
+localPort = 8501
 externalPort = 80
+
+[agent]
+expertMode = true
