@@ -3,7 +3,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib", "lsof"]
+packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "lsof", "openjpeg", "tcl", "tk", "zlib"]
 
 [unitTest]
 language = "python3"
@@ -15,14 +15,41 @@ requiredFiles = [".replit", "replit.nix"]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
 
-# [[ports]]
-# localPort = 8000
-# externalPort = 80
-# exposeLocalhost = true
+[[ports]]
+localPort = 5000
+externalPort = 80
 
 [[ports]]
 localPort = 8501
 externalPort = 80
 
+[[ports]]
+localPort = 45783
+externalPort = 3000
+
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Server"
+
+[[workflows.workflow]]
+name = "Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "streamlit run main.py --server.port 5000 --server.address 0.0.0.0"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
