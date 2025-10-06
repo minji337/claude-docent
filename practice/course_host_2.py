@@ -203,7 +203,10 @@ def main():
             st.markdown(resp)
     else:
         for message in st.session_state.chat_history[-2:]:
-            if "[context" in message["content"]:
+            if (
+                not isinstance(message["content"], str)
+                or "[context]" in message["content"]
+            ):
                 continue
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])

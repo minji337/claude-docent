@@ -1,0 +1,8 @@
+{
+  "mcpServers": { 
+    "itcourse":{
+      "command": "C:/Python313/python",
+      "args": ["D:/workspace/mcp_course/course_server.py"]
+    }
+  }
+}

@@ -3,6 +3,7 @@ modules = ["python-3.11"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["freetype", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib", "lsof"]
 
 [unitTest]
 language = "python3"
@@ -13,3 +14,15 @@ requiredFiles = [".replit", "replit.nix"]
 [deployment]
 run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
+
+# [[ports]]
+# localPort = 8000
+# externalPort = 80
+# exposeLocalhost = true
+
+[[ports]]
+localPort = 8501
+externalPort = 80
+
+[agent]
+expertMode = true

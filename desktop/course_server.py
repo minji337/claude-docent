@@ -53,15 +53,15 @@ def check_available_seats(course_name: str = Field(description="강좌 이름"))
     description="직업과 관심사를 기반으로 강의 추천을 위한 프롬프트를 생성합니다.",
 )
 def get_course_prompt_template(
-    job: str, interest: str
+    job: Literal["학생", "직장인", "주부", "기타"], interest: str
 ) -> str:
     return f"현재 직업은 {job}에요. {interest}에 대해 관심이 많아요. 강의 추천해주세요."
+
 
 if __name__ == "__main__":
     try:
         logger.info("Starting MCP server..............")
-        asyncio.run(mcp.run(transport="streamable-http"))
-        #asyncio.run(mcp.run(transport="stdio"))
-        #asyncio.run(mcp.run(transport="streamable-http", host="0.0.0.0", port=8000))
+        asyncio.run(mcp.run(transport="stdio"))       
     except Exception as e:
         logger.error(f"Server error: {str(e)}", exc_info=True)
+s
