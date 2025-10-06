@@ -13,5 +13,5 @@ def cosine_similarity(A, B):
     return round(float(dot_product / (norm_A * norm_B)), 4)
 
 if __name__ == "__main__":
-    print(f"고영호와 김현주 사이의 코사인 유사도:{cosine_similarity(고영호, 김현주)}")
-    print(f"고영호와 오지수 사이의 코사인 유사도:{cosine_similarity(고영호, 오지수)}")
+    print(f"고영호와 김현주 사이의 코사인 유사도: {cosine_similarity(고영호, 김현주)}")
+    print(f"고영호와 오지수 사이의 코사인 유사도: {cosine_similarity(고영호, 오지수)}")

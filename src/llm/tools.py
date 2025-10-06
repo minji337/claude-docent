@@ -1,7 +1,7 @@
 from anthropic import Anthropic
 from typing import Literal, Optional, Dict, TypedDict
 from pydantic import BaseModel, Field
-from .llm import claude_4 as claude
+from .llm import claude_4_5 as claude
 import logging
 from tavily import TavilyClient
 from .prompt_templates import history_based_prompt
@@ -127,18 +127,21 @@ def search_relics_without_period_and_genre(
     return results, message
     
 
-def search_historical_facts(query):
+def search_historical_facts(query) -> tuple[list, str]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
-        max_results=10,
-        search_depth="advanced",
-        include_answer="advanced",
+        max_results=3,
+        search_depth="advanced"
     )
+    logger.info(f"[query] {query}")
+    logger.info(f"[tavily_response] {tavily_response["answer"]}")
     references: list[tuple[str, str]] = []
-    for result in tavily_response["results"][:3]:
+    contents: list[str] = []
+    for result in tavily_response["results"]:
         references.append((result["title"], result["url"]))
-    return references, tavily_response["answer"]
+        contents.append(result["content"])
+    return references, contents
 
 
 class ToolData(TypedDict):
@@ -152,6 +155,7 @@ def use_tools(
     response = claude.create_tool_response(
         messages=messages,
         tools=tools,
+        tool_choice={"type": "any"},
     )
     if response.stop_reason != "tool_use":
         return None, None
@@ -172,7 +176,6 @@ def use_tools(
     elif tool_content.name == "search_historical_facts":
         data, message = search_historical_facts(tool_content.input["query"])
         tool_data: ToolData = {"type": "facts", "items": data}
-        # message_dict = {"role": "user", "content": message}
         message_dict = {
             "role": "user",
             "content": history_based_prompt.format(history_facts=message),
