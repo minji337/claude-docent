@@ -63,7 +63,7 @@ CASE-1. 사용자 메시지 그 자체에 '시대'와 '장르' 두 가지가 명
     </RESTRICTIONS>
 CASE-2. CASE-1에 해당하지 않는 전시물 검색 요청은 모두 search_relics_without_period_and_genre를 사용할 것
 CASE-3. 역사적 사실에 대해 질의할 때만 사용할 것. 박물관 관련된 질문에는 웹 검색을 사용하지 말 것.
-CASE-4. 위의 세 가지 도구 모두 사용하지 않는 경우에 한해 needs_relic_image 사용할 것.
+CASE-4. 위의 세 가지 도구 모두 사용하지 않는 경우는 항상 needs_relic_image를 사용할 것.
 """.strip()
 
 

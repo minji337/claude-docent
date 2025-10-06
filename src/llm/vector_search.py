@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 import os
 from openai import OpenAI
-from .llm import claude_4 as claude
+from .llm import claude_4_5 as claude
 from .prompt_templates import search_result_filter
 import json
 from utils.utils import setup_logging, project_root

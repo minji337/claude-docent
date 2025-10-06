@@ -10,30 +10,27 @@ from pydantic import BaseModel, Field
 import asyncio
 import base64
 
-from llm import claude_4 as claude
+from llm import claude_4_5 as claude
 from llm.prompt_templates import slackbot_system_prompt, slackbot_message
 from .email_sender import send_success_mail, send_fail_mail
 import logging
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
 SMITHERY_API_KEY = os.getenv("SMITHERY_API_KEY")
-SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 
-slack_config = {
-    "token": SLACK_BOT_TOKEN,
-}
-slack_config_json = json.dumps(slack_config, separators=(",", ":")).encode()
-slack_config_b64 = base64.urlsafe_b64encode(slack_config_json).decode()
+slack_url = (
+    f"https://server.smithery.ai/@smithery-ai/slack/mcp?api_key={SMITHERY_API_KEY}"
+)
 
-weather_config = {}
-weather_config_json = json.dumps(weather_config, separators=(",", ":")).encode()
-weather_config_b64 = base64.urlsafe_b64encode(weather_config_json).decode()
+base_slack_url = "https://server.smithery.ai/@smithery-ai/slack/mcp"
+params = {"api_key": SMITHERY_API_KEY}
+slack_url = f"{base_slack_url}?{urlencode(params)}"
 
-
-slack_url = f"https://server.smithery.ai/@smithery-ai/slack/mcp?config={slack_config_b64}&api_key={SMITHERY_API_KEY}"
-weather_url = f"https://server.smithery.ai/@isdaniel/mcp_weather_server/mcp?config={weather_config_b64}&api_key={SMITHERY_API_KEY}"
-
+base_weather_url = "https://server.smithery.ai/@glassBead-tc/weather-mcp/mcp"
+params = {"api_key": SMITHERY_API_KEY}
+weather_url = f"{base_weather_url}?{urlencode(params)}"
 
 config = {
     "mcpServers": {
@@ -146,7 +143,7 @@ class ReservationAgent:
             ):
                 self.reply_ts[application_id] = float(message[0]["latest_reply"])
                 return tool_result
-            await asyncio.sleep(3)  # 실제 운영 시에는 대기 시간을 적절히 늘려야 함.
+            await asyncio.sleep(5)  # 실제 운영 시에는 대기 시간을 적절히 늘려야 함.
             tool_result = await self.session.call_tool(tool_name, tool_args)
         return "응답한 문화해설사가 없습니다. 요청 건 취소가 필요합니다."
 
