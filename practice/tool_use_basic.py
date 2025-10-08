@@ -135,24 +135,25 @@ response = request_tool_call(messages)
 print(response.content[0].text)
 print("*"*100)
 
-messages = [
-{
-        "role": "assistant",
-        "content": [tool_content]
-    },
-    {
-        "role": "user",
-        "content": [
-            {
-                "type": "tool_result",
-                "tool_use_id": tool_content.id,
-                "content": str(tool_result),
-            }
-        ],
-    }
-]
+# messages = [
+# {
+#         "role": "assistant",
+#         "content": [tool_content]
+#     },
+#     {
+#         "role": "user",
+#         "content": [
+#             {
+#                 "type": "tool_result",
+#                 "tool_use_id": tool_content.id,
+#                 "content": str(tool_result),
+#             }
+#         ],
+#     }
+# ]
 
 
-response = request_tool_call(messages)
-print(response.model_dump())
+# response = request_tool_call(messages)
+# print(response.content[0].text)
+
 
