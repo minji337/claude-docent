@@ -1,0 +1,141 @@
+{
+  "updated": "2025-01-01",
+  "museums": {
+    "국립경주박물관": {
+      "hours": "10:00 ~ 18:00",
+      "hours_saturday": "11:00 ~ 21:00 (3월~12월 야간개장)",
+      "closed": "1월 1일, 설날, 추석, 매월 셋째 월요일",
+      "fee": "무료",
+      "address": "경상북도 경주시 일정로 186",
+      "phone": "054-740-7500",
+      "website": "https://gyeongju.museum.go.kr",
+      "specialty": "신라 문화",
+      "highlights": "성덕대왕신종(에밀레종), 금관, 천마도"
+    },
+    "국립광주박물관": {
+      "hours": "10:00 ~ 18:00",
+      "hours_children": "10:00 ~ 17:00 (어린이박물관)",
+      "closed": "1월 1일, 설날·추석 당일, 4월·11월 첫 월요일",
+      "fee": "무료",
+      "address": "광주광역시 북구 하서로 110 (매곡동)",
+      "phone": "062-570-7000",
+      "website": "https://gwangju.museum.go.kr",
+      "specialty": "아시아 도자문화, 신안해저유물",
+      "highlights": "청자 상감 모란국화무늬 참외모양 병(국보), 신안해저 도자기"
+    },
+    "국립전주박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "1월 1일, 설날, 추석, 매주 월요일",
+      "fee": "무료",
+      "address": "전라북도 전주시 완산구 쑥고개로 249",
+      "phone": "063-223-5651",
+      "website": "https://jeonju.museum.go.kr",
+      "specialty": "전북 역사문화, 조선왕실",
+      "highlights": "조선왕실 관련 유물, 서예문화"
+    },
+    "국립대구박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "대구광역시 수성구 청호로 321",
+      "phone": "053-768-6051",
+      "website": "https://daegu.museum.go.kr",
+      "specialty": "대구·경북 역사문화, 복식문화",
+      "highlights": "복식문화실, 고대문화실"
+    },
+    "국립부여박물관": {
+      "hours": "09:00 ~ 18:00",
+      "hours_weekend": "09:00 ~ 19:00 (토·공휴일)",
+      "hours_saturday_summer": "09:00 ~ 21:00 (4월~10월 토요일)",
+      "closed": "1월 1일, 설날, 추석, 매월 셋째 월요일",
+      "fee": "무료",
+      "address": "충청남도 부여군 부여읍 금성로 5",
+      "phone": "041-833-8562",
+      "website": "https://buyeo.museum.go.kr",
+      "specialty": "백제 문화 (사비 시대)",
+      "highlights": "백제금동대향로(국보), 금동관세음보살입상(국보)"
+    },
+    "국립공주박물관": {
+      "hours": "10:00 ~ 18:00",
+      "closed": "1월 1일, 설날, 추석, 매주 월요일",
+      "fee": "무료 (무료관람권 발급)",
+      "address": "충청남도 공주시 관광단지길 34",
+      "phone": "041-850-6300",
+      "website": "https://gongju.museum.go.kr",
+      "specialty": "백제 문화 (웅진 시대), 무령왕릉",
+      "highlights": "무령왕 금제관식(국보), 왕비 금제관식(국보), 지석(국보)"
+    },
+    "국립진주박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료 (진주성 입장료 별도)",
+      "address": "경상남도 진주시 남강로 626-35 (진주성 내)",
+      "phone": "055-740-0698",
+      "website": "https://jinju.museum.go.kr",
+      "specialty": "임진왜란, 서부 경남 역사",
+      "highlights": "비격진천뢰(보물), 김시민 선무공신교서(보물)"
+    },
+    "국립청주박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "충청북도 청주시 상당구 명암로 143",
+      "phone": "043-229-6300",
+      "website": "https://cheongju.museum.go.kr",
+      "specialty": "충북 역사문화",
+      "highlights": "계유명전씨아미타불비상(국보), 비상(碑像) 컬렉션"
+    },
+    "국립김해박물관": {
+      "hours": "09:00 ~ 18:00 (화~금)",
+      "hours_weekend": "09:00 ~ 19:00 (주말·공휴일)",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "경상남도 김해시 가야의길 190",
+      "phone": "055-320-6800",
+      "website": "https://gimhae.museum.go.kr",
+      "specialty": "가야 문화",
+      "highlights": "가야 철기, 가야 토기, 가야고분군 세계유산"
+    },
+    "국립제주박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "제주특별자치도 제주시 일주동로 17",
+      "phone": "064-720-8000",
+      "website": "https://jeju.museum.go.kr",
+      "specialty": "제주 역사문화, 탐라 문화",
+      "highlights": "탐라국 유물, 고산리 유적 출토품"
+    },
+    "국립춘천박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "강원특별자치도 춘천시 우석로 70",
+      "phone": "033-260-1500",
+      "website": "https://chuncheon.museum.go.kr",
+      "specialty": "강원도 역사문화",
+      "highlights": "한송사지 석조보살좌상(국보), 창령사 터 오백나한"
+    },
+    "국립나주박물관": {
+      "hours": "09:00 ~ 18:00",
+      "hours_vr": "10:00 ~ 18:00 (실감콘텐츠 체험관)",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "전라남도 나주시 반남면 고분로 747",
+      "phone": "061-330-7800",
+      "website": "https://naju.museum.go.kr",
+      "specialty": "마한·영산강 유역 문화",
+      "highlights": "신촌리 금동관(국보), 옹관묘, 보이는 수장고"
+    },
+    "국립익산박물관": {
+      "hours": "09:00 ~ 18:00",
+      "closed": "매주 월요일, 1월 1일, 설날·추석 당일",
+      "fee": "무료",
+      "address": "전북특별자치도 익산시 금마면 미륵사지로 362",
+      "phone": "063-830-0900",
+      "website": "https://iksan.museum.go.kr",
+      "specialty": "백제 문화, 미륵사지",
+      "highlights": "미륵사지 금제사리봉영기(국보), 사리장엄구"
+    }
+  }
+}

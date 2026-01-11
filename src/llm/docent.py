@@ -46,6 +46,7 @@ class InstructionHandler:
 
     # first_present_index = 0
     first_present_index = 1
+    # first_present_index = -1
 
     def __init__(self):
         self.last_guide_id = ""
@@ -136,13 +137,16 @@ class DocentBot:
         self.relics = Relics()
         self.instruction = InstructionHandler()
         self.instruction.add_museum_info(self.messages)
+        self.container: dict | None = None
 
     def greet(self) -> str:
         return self.greeting_message
 
     def _present_relic(self) -> None:
         self.instruction.add_guide(self.relics, self.messages)
-        response_message = claude.create_response_text(messages=self.messages)
+        response_message = claude.create_response_text(
+            messages=self.messages, container=self.container
+        )
         self.messages.append({"role": "assistant", "content": response_message})
         self.relics.set_presented(True)
 
@@ -161,7 +165,6 @@ class DocentBot:
         if not self.relics.is_presented():
             self._present_relic()
 
-    # 역사적 사실 검색 실습용
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
@@ -189,10 +192,14 @@ class DocentBot:
                     if needs_image
                     else self.museum_info_message + conversation
                 )
-                response_message = claude.create_response_text(messages=messages)
+                response_message = claude.create_response_text(
+                    messages=messages, container=self.container
+                )
                 self.messages.append({"role": "assistant", "content": response_message})
             case _:
-                response_message = claude.create_response_text(messages=self.messages)
+                response_message = claude.create_response_text(
+                    messages=self.messages, container=self.container
+                )
                 self.messages.append({"role": "assistant", "content": response_message})
 
         return references, response_message
@@ -206,6 +213,7 @@ class DocentBot:
         for message in self.messages[1:]:
             if isinstance(message["content"], list):
                 text_message: str = message["content"][1]["text"]
+                # text_message: str = message["content"][0]["text"]
             else:
                 text_message = message["content"]
             text_message = text_message.strip()

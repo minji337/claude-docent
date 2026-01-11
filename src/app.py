@@ -1,7 +1,7 @@
 import streamlit as st
 import logging
 from utils import setup_logging, logger, get_base64_data, email_to_6digit_hash
-from llm import DocentBot
+from llm import DocentBot, claude
 import datetime
 import asyncio
 import threading
@@ -393,6 +393,11 @@ def main_page(docent_bot: DocentBot) -> None:
 
 
 if "status" not in st.session_state:
+
+    async def create_container():
+        return await claude.create_container()
+
+    st.session_state.container_future = run_async(create_container())
     init_page()
 elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
@@ -402,6 +407,7 @@ elif st.session_state.status == "entered":
     st.session_state.status = "guide_active"
     on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()
+    docent_bot.container = st.session_state.container_future.result()
     st.rerun()
 elif st.session_state.status == "guide_active":
     docent_bot: DocentBot = st.session_state.docent_bot

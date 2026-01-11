@@ -1,40 +1,57 @@
-import os
+from fastmcp.client.transports import MCPConfigTransport
 
-from typing import Optional
-from contextlib import AsyncExitStack
-import traceback
-from fastmcp import Client
-import json
-import os
-from pydantic import BaseModel, Field
 import asyncio
-import base64
+import json
+import logging
+import os
+import sys
+import traceback
+from contextlib import AsyncExitStack
+from pathlib import Path
+from urllib.parse import urlencode
+
+from fastmcp import Client
+from pydantic import BaseModel, Field
+from slack_bolt.async_app import AsyncApp
+from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
 
 from llm import claude_4_5 as claude
-from llm.prompt_templates import slackbot_system_prompt, slackbot_message
-from .email_sender import send_success_mail, send_fail_mail
-import logging
-from urllib.parse import urlencode
+
+# from llm import claude_3_5_haiku as claude
+from llm.prompt_templates import (
+    notice_system_prompt,
+    reply_system_prompt,
+    slackbot_message,
+)
+from .email_sender import (
+    send_success_mail,
+    send_fail_mail,
+    retrieve_email_address,
+    store_email_address,
+)
 
 logger = logging.getLogger(__name__)
 
 SMITHERY_API_KEY = os.getenv("SMITHERY_API_KEY")
 
-slack_url = (
-    f"https://server.smithery.ai/@smithery-ai/slack/mcp?api_key={SMITHERY_API_KEY}"
-)
+# 프로젝트 루트에서 mcp-slack-python 디렉토리 경로 계산
+current_file = Path(__file__).resolve()
+project_root = current_file.parent.parent.parent
+mcp_slack_path = project_root / "mcp-slack-python" / "main.py"
 
-base_slack_url = "https://server.smithery.ai/@smithery-ai/slack/mcp"
-params = {"api_key": SMITHERY_API_KEY}
-slack_url = f"{base_slack_url}?{urlencode(params)}"
+# base_weather_url = "https://server.smithery.ai/@glassBead-tc/weather-mcp/mcp"
+base_weather_url = "https://server.smithery.ai/@isdaniel/mcp_weather_server/mcp"
 
-base_weather_url = "https://server.smithery.ai/@glassBead-tc/weather-mcp/mcp"
 params = {"api_key": SMITHERY_API_KEY}
 weather_url = f"{base_weather_url}?{urlencode(params)}"
 
 config = {
     "mcpServers": {
-        "slack": {"url": slack_url, "transport": "streamable-http"},
+        "slack": {
+            "command": sys.executable,  # 현재 Python 인터프리터
+            "args": [str(mcp_slack_path)],
+            "transport": "stdio",
+        },
         "weather": {"url": weather_url, "transport": "streamable-http"},
     }
 }
@@ -45,42 +62,123 @@ application_template = """
 ⏰ 방문시간: {visit_hours}
 👥 방문인원: {visitors}
 🕒 신청일시: {application_time}
-🕒 신청자번호: {applicant_number}
+🔢 신청자번호: {applicant_number}
 """.strip()
 
 
-def modify_input_schema(input_schema) -> dict:
-    if "properties" in input_schema:
-        if "required" not in input_schema or not isinstance(
-            input_schema["required"], list
-        ):
-            input_schema["required"] = list(input_schema["properties"].keys())
-        else:
-            for key in input_schema["properties"].keys():
-                if key not in input_schema["required"]:
-                    input_schema["required"].append(key)
-
-        for key, value in input_schema["properties"].items():
-            if "default" in value:
-                del value["default"]
-
-    return input_schema
+app = AsyncApp(token=os.getenv("SLACK_BOT_TOKEN"))
 
 
-class Report(BaseModel):
-    is_success: bool = Field(description="예약 성공 여부")
-    failure_message: Optional[str] = Field(description="예약 실패 사유")
-    thread_ts: str = Field(description="스레드의 timestamp")
-    channel_id: str = Field(description="스레드가 있는 채널의 id")
-    docent_name: Optional[str] = Field(description="예약된 경우 도슨트의 이름")
-    docent_email: Optional[str] = Field(description="예약된 경우 도슨트의 이메일")
+class SucessMail(BaseModel):
+    application_form: str = Field(description="슬랙에 공지했던 형식과 내용")
+    applicant_email: str
+    docent_name: str
+    docent_email: str
 
 
-report_reservation = {
-    "name": "report_reservation",
-    "description": "예약 작업 수행 결과",
-    "input_schema": Report.model_json_schema(),
+class FailMail(BaseModel):
+    applicant_email: str
+    failure_message: str
+
+
+class EmailAddressRetriever(BaseModel):
+    applicant_number: str
+
+
+success_mail = {
+    "name": "send_success_mail",
+    "description": "예약 성공 메일",
+    "input_schema": SucessMail.model_json_schema(),
 }
+
+fail_mail = {
+    "name": "send_fail_mail",
+    "description": "예약 실패 메일",
+    "input_schema": FailMail.model_json_schema(),
+}
+
+email_address_retriever = {
+    "name": "retrieve_email_address",
+    "description": "신청자 이메일 주소 검색",
+    "input_schema": EmailAddressRetriever.model_json_schema(),
+}
+
+local_tool_repository = {
+    "send_success_mail": send_success_mail,
+    "send_fail_mail": send_fail_mail,
+    "retrieve_email_address": retrieve_email_address,
+}
+
+
+class Agent:
+
+    def __init__(
+        self, system_prompt: str, tools: list[dict], session: Client[MCPConfigTransport]
+    ):
+        self.system_prompt: str = system_prompt
+        self.tools: list[dict] = tools
+        self.session: Client[MCPConfigTransport] = session
+
+    def _call_llm(self, messages: list[dict]) -> dict:
+        response = claude.create_tool_response(
+            messages=messages,
+            temperature=0.0,
+            max_tokens=2048,
+            tools=self.tools,
+            tool_system_prompt=self.system_prompt,
+        )
+        logger.info(f"\n\n<<ReAct message>>\n{response.content[0].text}\n\n")
+        return response
+
+    async def _call_tool(self, tool_name: str, tool_args: dict) -> dict:
+        local_func = local_tool_repository.get(tool_name, None)
+        if local_func:
+            return local_func(**tool_args)
+        else:
+            return await self.session.call_tool(tool_name, tool_args)
+
+    async def do_work(self, messages: list[dict]) -> dict:
+        try:
+            response = self._call_llm(messages)
+            tries = 0
+            while True:
+                tool_content = next(
+                    content
+                    for content in response.content
+                    if content.type == "tool_use"
+                )
+                tool_name, tool_args = tool_content.name, tool_content.input
+                logger.info(f"call_tool {tool_name} {tool_args}")
+
+                tool_result = await self._call_tool(tool_name, tool_args)
+                logger.info(f"tool_result {tool_name} {tool_args} {tool_result}")
+                messages.extend(
+                    [
+                        {"role": "assistant", "content": response.content},
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "tool_result",
+                                    "tool_use_id": tool_content.id,
+                                    "content": str(tool_result),
+                                }
+                            ],
+                        },
+                    ]
+                )
+                response = self._call_llm(messages)
+                # logger.info(f"do_work response...{response}")
+                if response.stop_reason == "end_turn":
+                    break
+                if tries > 10:
+                    raise ValueError("Too many tries")
+                tries += 1
+
+        except Exception as e:
+            logger.error(f"do_work error: {e}")
+            traceback.print_exc()
+            raise e
 
 
 class ReservationAgent:
@@ -88,12 +186,31 @@ class ReservationAgent:
     def __init__(self):
         self.exit_stack = AsyncExitStack()
         self.tools: list[dict] = []
-        self.reply_ts: dict[str, float] = {}
+        self.socket_handler = None
+        self.socket_task: asyncio.Task | None = None
 
-    async def connect_server(self, timeout: float = 30.0) -> None:
+    def _on_socket_task_done(self, task: asyncio.Task) -> None:
+        try:
+            task.result()
+        except Exception as e:
+            traceback.print_exc(e)
+            logger.error(f"Slack SocketMode handler terminated with error: {e}")
+
+    async def initialize_socket_handler(self):
+        app_token = os.getenv("SLACK_APP_TOKEN")
+        if not app_token:
+            raise RuntimeError("SLACK_APP_TOKEN is not configured")
+
+        self.socket_handler = AsyncSocketModeHandler(app, app_token)
+        loop = asyncio.get_running_loop()
+        self.socket_task = loop.create_task(self.socket_handler.start_async())
+        self.socket_task.add_done_callback(self._on_socket_task_done)
+        await asyncio.sleep(0)
+
+    async def connect_server(self, timeout: float = 30.0 * 100) -> None:
         try:
             self.session = await self.exit_stack.enter_async_context(
-                Client(config, timeout=timeout)
+                Client[MCPConfigTransport](config, timeout=timeout)
             )
             await self.setup_context()
             logger.info("MCP 서버 연결 완료")
@@ -109,11 +226,10 @@ class ReservationAgent:
                 {
                     "name": tool.name,
                     "description": tool.description,
-                    # "input_schema": modify_input_schema(tool.inputSchema),
                     "input_schema": tool.inputSchema,
                 }
                 for tool in mcp_tools
-            ] + [report_reservation]
+            ] + [success_mail, fail_mail, email_address_retriever]
             logger.info(f"도구 목록: {[tool['name'] for tool in self.tools]}")
 
         except Exception as e:
@@ -121,112 +237,56 @@ class ReservationAgent:
             traceback.print_exc()
             raise e
 
-    def _call_llm(self, messages: list[dict]) -> dict:
-        response = claude.create_tool_response(
-            messages=messages,
-            temperature=0.0,
-            max_tokens=1024,
-            tools=self.tools,
-            tool_system_prompt=slackbot_system_prompt,
+    def build_agents(self) -> None:
+        self.notice_agent = Agent(
+            system_prompt=notice_system_prompt, tools=self.tools, session=self.session
         )
-        logger.info(f"\n\n<<ReAct message>>\n{response.content[0].text}\n\n")
-        return response
-
-    async def _polling_result(
-        self, application_id: str, tool_name, tool_args: str, tool_result: dict
-    ) -> str | dict:
-        for _ in range(1, 10):
-            message = json.loads(tool_result[0].text)["messages"]
-            if (
-                "latest_reply" in message[0]
-                and float(message[0]["latest_reply"]) > self.reply_ts[application_id]
-            ):
-                self.reply_ts[application_id] = float(message[0]["latest_reply"])
-                return tool_result
-            await asyncio.sleep(5)  # 실제 운영 시에는 대기 시간을 적절히 늘려야 함.
-            tool_result = await self.session.call_tool(tool_name, tool_args)
-        return "응답한 문화해설사가 없습니다. 요청 건 취소가 필요합니다."
-
-    async def _delegate_to_slackbot(
-        self, application_id: str, messages: list[dict]
-    ) -> dict:
-        response = self._call_llm(messages)
-        tries = 0
-        while True:
-            tool_content = next(
-                content for content in response.content if content.type == "tool_use"
-            )
-            tool_name, tool_args = tool_content.name, tool_content.input
-            logger.info(f"call_tool {tool_name} {tool_args}")
-
-            if tool_name == "report_reservation":
-                return tool_args
-
-            tool_result = await self.session.call_tool(tool_name, tool_args)
-            logger.info(f"tool_result {tool_name} {tool_args} {tool_result}")
-
-            if "slack_get_thread_replies" in tool_name:
-                tool_result = await self._polling_result(
-                    application_id, tool_name, tool_args, tool_result
-                )
-
-            logger.info(f"tool_result: {tool_result}")
-            messages.extend(
-                [
-                    {"role": "assistant", "content": response.content},
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "tool_result",
-                                "tool_use_id": tool_content.id,
-                                "content": str(tool_result),
-                            }
-                        ],
-                    },
-                ]
-            )
-            response = self._call_llm(messages)
-            if tries > 10:
-                raise ValueError("Too many tries")
-            tries += 1
+        self.reply_agent = Agent(
+            system_prompt=reply_system_prompt, tools=self.tools, session=self.session
+        )
 
     async def make_reservation(self, application: dict) -> None:
         application_without_email = {}
-        for k, v in application.items():
-            if k == "applicant_email":
+        applicant_number: str = application["applicant_number"]
+        for item_name, item_value in application.items():
+            if item_name == "applicant_email":
+                store_email_address(applicant_number, item_value)
                 continue
-            if k == "application_time":
-                application_without_email[k] = v.rsplit(".", 1)[0]
+            if item_name == "application_time":
+                application_without_email[item_name] = item_value.rsplit(".", 1)[0]
             else:
-                application_without_email[k] = v
+                application_without_email[item_name] = item_value
 
         application_form = application_template.format(**application_without_email)
-        input_messages = [
+
+        messages = [
             {
                 "role": "user",
                 "content": slackbot_message.format(application_form=application_form),
             },
         ]
 
-        application_id: str = application["application_time"]
-        self.reply_ts[application_id] = 0.0
-        slackbot_response = await self._delegate_to_slackbot(
-            application_id, input_messages
-        )
-        receiver = application["applicant_email"]
-        try:
-            if slackbot_response["is_success"]:
-                send_success_mail(application_form, receiver, slackbot_response)
-            else:
-                send_fail_mail(receiver, slackbot_response["failure_message"])
-        except Exception as e:
-            logger.error(f"메일 전송 실패: {e}")
-            traceback.print_exc()
-            raise e
+        await self.notice_agent.do_work(messages)
+
+    async def make_reply(self, event: dict):
+        messages = [
+            {
+                "role": "assistant",
+                "content": json.dumps(event, ensure_ascii=False),
+            },
+        ]
+        await self.reply_agent.do_work(messages)
 
     async def cleanup(self) -> None:
         try:
+            if self.socket_task and not self.socket_task.done():
+                self.socket_task.cancel()
+                try:
+                    await self.socket_task
+                except asyncio.CancelledError:
+                    pass
+            self.socket_task = None
+            self.socket_handler = None
             await self.exit_stack.aclose()
             logger.info("MCP 서버 연결 해제")
         except Exception as e:
@@ -235,19 +295,13 @@ class ReservationAgent:
             raise e
 
 
-async def main() -> None:
-    agent = ReservationAgent()
-    await agent.connect_server()
-    await agent.make_reservation(
-        {
-            "program": "대표 유물 해설",
-            "visit_date": "2025-06-09 (월)",
-            "visit_hours": "11:00",
-            "visitors": 1,
-            "applicant_email": "heyjin337@gmail.com",
-        }
-    )
+reservation_agent: ReservationAgent = None
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+@app.event("message")
+async def on_message(event):
+    if event.get("bot_id") or not event.get("user") or not event.get("thread_ts"):
+        return
+    # Slack socket mode expects the handler to finish quickly so we offload heavy work.
+    asyncio.create_task(reservation_agent.make_reply(event))
+    # await reservation_agent.make_reply(event)

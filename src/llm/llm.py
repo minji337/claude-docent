@@ -4,18 +4,44 @@ from .prompt_templates import (
     system_prompt as default_system_prompt,
     tool_system_prompt as default_tool_system_prompt,
 )
+from dotenv import load_dotenv, find_dotenv
 import logging
+from anthropic import AsyncAnthropic
 
 logger = logging.getLogger(__name__)
+
+load_dotenv(find_dotenv(), override=True)
 
 
 class LLM:
 
     def __init__(self, model_name: str, system_prompt: str, tool_system_prompt):
         self.client = Anthropic()
+        self.async_client = AsyncAnthropic()
         self.model = model_name
         self.system_prompt = system_prompt
         self.tool_system_prompt = tool_system_prompt
+
+    async def create_container(self) -> dict:
+        container = {
+            "skills": [
+                {
+                    "type": "custom",
+                    "skill_id": local_museums_skill_id,
+                    "version": "latest",
+                }
+            ],
+        }
+        response = await self.async_client.beta.messages.create(
+            max_tokens=1024,
+            messages=[{"role": "user", "content": "지역 국립박물관 초기화"}],
+            model=self.model,
+            betas=["code-execution-2025-08-25", "skills-2025-10-02"],
+            container=container,
+            tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
+        )
+        container["id"] = response.container.id
+        return container
 
     def create_response_text(
         self,
@@ -24,19 +50,30 @@ class LLM:
         max_tokens: int = 2048,
         system_prompt: str | None = None,
         stop_sequences: list[str] | None = None,
+        container: dict | None = None,
     ) -> str:
         try:
-            response = self.client.messages.create(
+            response = self.client.beta.messages.create(
                 max_tokens=max_tokens,
                 temperature=temperature,
                 system=system_prompt or self.system_prompt,
                 messages=messages,
                 model=self.model,
                 stop_sequences=stop_sequences,
-                extra_headers={"anthropic-beta": "files-api-2025-04-14"},
+                betas=[
+                    "files-api-2025-04-14",
+                    "code-execution-2025-08-25",
+                    "skills-2025-10-02",
+                ],
+                container=container,
+                tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
             )
             print("대화 토큰 사용:", response.usage.model_dump_json())
-            return response.content[0].text
+            result_text = ""
+            for block in response.content:
+                if hasattr(block, "text"):
+                    result_text += block.text + "\n"
+            return result_text.strip()
         except Exception as e:
             logging.error(f"[create_response error] {e}")
             raise e
@@ -86,3 +123,17 @@ claude_3_5_haiku = LLM(
     system_prompt=default_system_prompt,
     tool_system_prompt=default_tool_system_prompt,
 )
+
+
+def find_existing_skill(display_title: str) -> str | None:
+    client = Anthropic()
+
+    skills = client.beta.skills.list(source="custom", betas=["skills-2025-10-02"])
+
+    for skill in skills.data:
+        if skill.display_title == display_title:
+            return skill.id
+    return None
+
+
+local_museums_skill_id = find_existing_skill("지역 국립박물관 안내")
