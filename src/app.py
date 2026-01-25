@@ -1,11 +1,12 @@
 import streamlit as st
 import logging
 from utils import setup_logging, logger, get_base64_data, email_to_6digit_hash
-from llm import DocentBot, claude
+from llm import DocentBot
 import datetime
 import asyncio
 import threading
 from concurrent.futures import Future
+from reservation import reservation_agent as reservation_agent_module
 from reservation.reservation_agent import ReservationAgent
 import re
 import datetime
@@ -178,7 +179,15 @@ def run_async(coro) -> Future:
 @st.cache_resource(show_spinner=False)
 def get_reservation_agent() -> tuple[ReservationAgent, Future]:
     agent = ReservationAgent()
-    future = run_async(agent.connect_server())
+    reservation_agent_module.reservation_agent = agent
+
+    # 비동기 초기화 함수
+    async def initialize_agent():
+        await agent.initialize_socket_handler()
+        await agent.connect_server()
+        agent.build_agents()
+
+    future = run_async(initialize_agent())
     return agent, future
 
 
@@ -393,11 +402,6 @@ def main_page(docent_bot: DocentBot) -> None:
 
 
 if "status" not in st.session_state:
-
-    async def create_container():
-        return await claude.create_container()
-
-    st.session_state.container_future = run_async(create_container())
     init_page()
 elif st.session_state.status == "entered":
     docent_bot: DocentBot = st.session_state.docent_bot
@@ -407,7 +411,6 @@ elif st.session_state.status == "entered":
     st.session_state.status = "guide_active"
     on_progress(lambda: docent_bot.move(is_next=True))
     st.session_state.relic_card = docent_bot.relics.current_to_card()
-    docent_bot.container = st.session_state.container_future.result()
     st.rerun()
 elif st.session_state.status == "guide_active":
     docent_bot: DocentBot = st.session_state.docent_bot

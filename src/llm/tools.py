@@ -80,7 +80,7 @@ tools = [
             "properties": {
                 "is_image_needed": {
                     "type": "boolean",
-                    "description": "사용자의 메시지가 전시물에 관한 것인지 여부(지역 국립박물관에 관한 질문은 항상 False로 응답)",
+                    "description": "사용자의 메시지가 전시물에 관한 것인지 여부",
                 },
             },
         },
