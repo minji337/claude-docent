@@ -14,14 +14,18 @@ from fastmcp import Client
 from pydantic import BaseModel, Field
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
+from datetime import datetime
 
 from llm import claude_4_5 as claude
 
 # from llm import claude_3_5_haiku as claude
 from llm.prompt_templates import (
+    react_prompt,
     notice_system_prompt,
     reply_system_prompt,
-    slackbot_message,
+    expiry_check_system_prompt,
+    notice_message,
+    expiry_check_message,
 )
 from .email_sender import (
     send_success_mail,
@@ -39,7 +43,6 @@ current_file = Path(__file__).resolve()
 project_root = current_file.parent.parent.parent
 mcp_slack_path = project_root / "mcp-slack-python" / "main.py"
 
-# base_weather_url = "https://server.smithery.ai/@glassBead-tc/weather-mcp/mcp"
 base_weather_url = "https://server.smithery.ai/@isdaniel/mcp_weather_server/mcp"
 
 params = {"api_key": SMITHERY_API_KEY}
@@ -51,6 +54,9 @@ config = {
             "command": sys.executable,  # 현재 Python 인터프리터
             "args": [str(mcp_slack_path)],
             "transport": "stdio",
+            "env": {
+                  "SLACK_BOT_TOKEN": os.getenv("SLACK_BOT_TOKEN"),
+              },
         },
         "weather": {"url": weather_url, "transport": "streamable-http"},
     }
@@ -66,7 +72,7 @@ application_template = """
 """.strip()
 
 
-app = AsyncApp(token=os.getenv("SLACK_BOT_TOKEN"))
+app = AsyncApp(token=os.getenv("SLACK_BOT_TOKEN"))  # STEP-①
 
 
 class SucessMail(BaseModel):
@@ -196,7 +202,7 @@ class ReservationAgent:
             traceback.print_exc(e)
             logger.error(f"Slack SocketMode handler terminated with error: {e}")
 
-    async def initialize_socket_handler(self):
+    async def initialize_socket_handler(self):  # STEP-③ ~ STEP-⑦
         app_token = os.getenv("SLACK_APP_TOKEN")
         if not app_token:
             raise RuntimeError("SLACK_APP_TOKEN is not configured")
@@ -239,10 +245,23 @@ class ReservationAgent:
 
     def build_agents(self) -> None:
         self.notice_agent = Agent(
-            system_prompt=notice_system_prompt, tools=self.tools, session=self.session
+            system_prompt=notice_system_prompt.format(
+                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
+            ),
+            tools=self.tools,
+            session=self.session,
         )
         self.reply_agent = Agent(
-            system_prompt=reply_system_prompt, tools=self.tools, session=self.session
+            system_prompt=reply_system_prompt.format(react_prompt=react_prompt),
+            tools=self.tools,
+            session=self.session,
+        )
+        self.expiry_check_agent = Agent(
+            system_prompt=expiry_check_system_prompt.format(
+                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
+            ),
+            tools=self.tools,
+            session=self.session,
         )
 
     async def make_reservation(self, application: dict) -> None:
@@ -262,7 +281,7 @@ class ReservationAgent:
         messages = [
             {
                 "role": "user",
-                "content": slackbot_message.format(application_form=application_form),
+                "content": notice_message.format(application_form=application_form),
             },
         ]
 
@@ -271,11 +290,23 @@ class ReservationAgent:
     async def make_reply(self, event: dict):
         messages = [
             {
-                "role": "assistant",
+                "role": "user",
                 "content": json.dumps(event, ensure_ascii=False),
             },
         ]
         await self.reply_agent.do_work(messages)
+
+    async def check_expired_reservations(self) -> None:
+        logger.info("만료된 예약 체크 시작")
+        messages = [
+            {"role": "user", "content": expiry_check_message},
+        ]
+        try:
+            await self.expiry_check_agent.do_work(messages)
+            logger.info("만료된 예약 체크 완료")
+        except Exception as e:
+            logger.error(f"만료된 예약 체크 중 오류: {e}")
+            traceback.print_exc()
 
     async def cleanup(self) -> None:
         try:
@@ -298,10 +329,9 @@ class ReservationAgent:
 reservation_agent: ReservationAgent = None
 
 
-@app.event("message")
-async def on_message(event):
+@app.event("message")  # STEP-②
+async def on_message(event):  # STEP-⑦, STEP-⑧
     if event.get("bot_id") or not event.get("user") or not event.get("thread_ts"):
         return
-    # Slack socket mode expects the handler to finish quickly so we offload heavy work.
+    # 슬랙 소켓 모드 타임아웃 방지를 위해 백그라운드 태스크로 처리
     asyncio.create_task(reservation_agent.make_reply(event))
-    # await reservation_agent.make_reply(event)

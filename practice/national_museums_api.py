@@ -20,7 +20,7 @@ client = Anthropic()
 
 
 def upload_skill(display_title: str) -> str:
-    skill = client.beta.skills.create(
+    skill = client.beta.    skills.create(
         display_title=display_title,
         files=files_from_dir(str(SKILL_DIR)),
         betas=["skills-2025-10-02"],
