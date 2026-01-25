@@ -6,6 +6,7 @@ import datetime
 import asyncio
 import threading
 from concurrent.futures import Future
+from reservation import reservation_agent as reservation_agent_module
 from reservation.reservation_agent import ReservationAgent
 import re
 import datetime
@@ -178,7 +179,15 @@ def run_async(coro) -> Future:
 @st.cache_resource(show_spinner=False)
 def get_reservation_agent() -> tuple[ReservationAgent, Future]:
     agent = ReservationAgent()
-    future = run_async(agent.connect_server())
+    reservation_agent_module.reservation_agent = agent
+
+    # 비동기 초기화 함수
+    async def initialize_agent():
+        await agent.initialize_socket_handler()
+        await agent.connect_server()
+        agent.build_agents()
+
+    future = run_async(initialize_agent())
     return agent, future
 
 

@@ -78,6 +78,7 @@ class LLM:
 
 claude_4_5 = LLM(
     model_name="claude-sonnet-4-5-20250929",
+    #model_name="claude-3-5-haiku-20241022",
     system_prompt=default_system_prompt,
     tool_system_prompt=default_tool_system_prompt,
 )

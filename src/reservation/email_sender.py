@@ -31,6 +31,18 @@ email_fail_template = """
 """.strip()
 
 
+applicants_email: dict[str, str] = {}
+
+
+def store_email_address(applicant_number: str, email_address: str) -> None:
+    applicants_email[applicant_number] = email_address
+
+
+def retrieve_email_address(**kwargs) -> str:
+    applicant_number = kwargs["applicant_number"]
+    return applicants_email.get(applicant_number, "")
+
+
 def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str) -> None:
     recipients = [receiver, cc]
     msg = MIMEText(body)
@@ -50,21 +62,28 @@ def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str) -> N
     logging.info("메일 전송 완료")
 
 
-def send_success_mail(application_form: str, receiver: str, bot_response: dict) -> None:
+def send_success_mail(**kwargs) -> None:
+    application_form = kwargs["application_form"]
+    receiver = kwargs["applicant_email"]
+    docent_name = kwargs["docent_name"]
+    docent_email = kwargs["docent_email"]
+
     body = email_success_template.format(
         application_form=application_form,
-        docent_name=bot_response["docent_name"],
-        docent_email=bot_response["docent_email"],
+        docent_name=docent_name,
+        docent_email=docent_email,
     )
     sender = os.getenv("SENDER_EMAIL")
     subject = "문화해설사 예약이 완료되었습니다."
-    cc = bot_response["docent_email"]
+    cc = docent_email
     send_mail(sender, receiver, cc, subject, body)
 
 
-def send_fail_mail(receiver: str, failure_message: str) -> None:
+def send_fail_mail(**kwargs) -> None:
+    receiver = kwargs["applicant_email"]
+    failure_message = kwargs["failure_message"]
     body = email_fail_template.format(failure_message=failure_message)
-    sender = os.getenv("SENDER_EMAIL")
+    sender = os.getenv("SENDER_EMAIL")  # 메일 발송 시스템
     subject = "문화해설사 예약이 실패했습니다."
-    cc = os.getenv("MANAGER_EMAIL")
+    cc = os.getenv("MANAGER_EMAIL")  # 사람 관리자
     send_mail(sender, receiver, cc, subject, body)
