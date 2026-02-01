@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Bash(*)",
+      "WebSearch",
+      "WebFetch(*)"
+    ],
+    "deny": [
+      "Read(./practice/**)"
+    ]
+  }
+}
