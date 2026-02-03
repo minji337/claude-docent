@@ -4,19 +4,17 @@ from pydantic import BaseModel, Field
 from .llm import claude_4_5 as claude
 import logging
 from tavily import TavilyClient
-from .prompt_templates import history_based_prompt
+from .prompt_templates import history_based_prompt, tool_system_prompt
 
 logger = logging.getLogger(__name__)
 
-
+client = Anthropic()
 tavily = TavilyClient()
 
 
 class Category(BaseModel):
     nationality: str = Field(description="예: 한국, 중국, 일본")
-    period: str = Field(
-        description="예: 신라, 고려, 조선. 단, 통일신라는 '신라'로 표기"
-    )
+    period: str = Field(description="예: 신라, 고려, 조선. 단, 통일신라는 '신라'로 표기")
     genre: Literal[
         "건축",
         "조각(불상)",
@@ -33,22 +31,26 @@ class Category(BaseModel):
 
 tools = [
     {
+        "type": "tool_search_tool_regex_20251119",
+        "name": "tool_search_tool_regex"
+    },
+    {
         "name": "search_relics_by_period_and_genre",
-        "description": "사용자가 **시대**와 **장르**로 검색 요청하는 경우에 한해 선택할 것",
+        "description": "사용자가 시대와 장르를 모두 명시하여 전시물 검색을 요청한 경우에만 사용",
         "input_schema": Category.model_json_schema(),
+        "defer_loading": True,
     },
     {
         "name": "search_historical_facts",
-        "description": "역사적 사실에 대한 사용자의 질문에 답하기 위해 사용",
+        "description": "역사적 사실·배경 설명이 필요한 질문에 대해 웹 검색으로 보조 정보 수집",
         "input_schema": {
             "type": "object",
             "properties": {
-                "query": {
-                    "type": "string",
-                    "description": "웹 검색에 입력할 키워드를 만들 것",
-                },
+                "query": {"type": "string", "description": "웹 검색 키워드"},
             },
+            "required": ["query"],
         },
+        "defer_loading": True,
     },
 ]
 
@@ -94,10 +96,21 @@ class ToolData(TypedDict):
 def use_tools(
     messages: list, database: dict
 ) -> tuple[Optional[ToolData], Optional[Dict[str, str]]]:
-    response = claude.create_tool_response(
-        messages=messages,
+    response = client.beta.messages.create(
+        max_tokens=1024,
+        temperature=0.0,        
         tools=tools,
+        system=[
+            {
+                "type": "text",
+                "text": tool_system_prompt,
+            },
+        ],
+        messages=messages,
+        model="claude-sonnet-4-5-20250929",
+        betas=["advanced-tool-use-2025-11-20"],
     )
+
     if response.stop_reason != "tool_use":
         return None, None
     tool_content = next(

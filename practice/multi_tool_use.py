@@ -2,6 +2,7 @@ import anthropic
 from pprint import pprint
 from datetime import datetime
 import pytz
+import json
 
 def get_weather(location: str, unit: str = "섭씨") -> dict:
     try:
@@ -113,7 +114,7 @@ if response.stop_reason == "tool_use":
         tool_result_blocks.append({
             "type": "tool_result",
             "tool_use_id": content.id,
-            "content": str(tool_result),
+            "content": json.dumps(tool_result),
         })        
 
     messages.extend([

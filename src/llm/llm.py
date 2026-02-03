@@ -51,7 +51,8 @@ class LLM:
     ) -> Message:
 
         try:
-            response = self.client.messages.create(
+            #response = self.client.messages.create(
+            response = self.client.beta.messages.create(
                 max_tokens=max_tokens,
                 temperature=temperature,
                 tools=tools,
@@ -65,6 +66,7 @@ class LLM:
                 messages=messages,
                 model=self.model,
                 stop_sequences=stop_sequences,
+                betas=["advanced-tool-use-2025-11-20"],
             )
             return response
         except Exception as e:

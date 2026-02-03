@@ -2,6 +2,7 @@ import anthropic
 from pprint import pprint
 from datetime import datetime
 import pytz
+import json
 
 def get_weather(location: str, unit: str = "섭씨") -> dict:
     try:
@@ -126,7 +127,7 @@ messages.append(
             {
                 "type": "tool_result",
                 "tool_use_id": tool_content.id,
-                "content": str(tool_result),
+                "content": json.dumps(tool_result),
             }
         ],
     }
@@ -146,7 +147,7 @@ print("*"*100)
 #             {
 #                 "type": "tool_result",
 #                 "tool_use_id": tool_content.id,
-#                 "content": str(tool_result),
+#                 "content": json.dumps(tool_result),
 #             }
 #         ],
 #     }
