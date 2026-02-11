@@ -75,7 +75,7 @@ application_template = """
 app = AsyncApp(token=os.getenv("SLACK_BOT_TOKEN"))
 
 
-class SucessMail(BaseModel):
+class SuccessMail(BaseModel):
     application_form: str = Field(description="슬랙에 공지했던 형식과 내용")
     applicant_email: str
     docent_name: str
@@ -95,7 +95,7 @@ class EmailAddressRetriever(BaseModel):
 @tool(
     "send_success_mail",
     "예약 성공 메일",
-    SucessMail.model_json_schema(),
+    SuccessMail.model_json_schema(),
 )
 async def send_success_mail_tool(args: dict):
     result = send_success_mail(**args)

@@ -17,7 +17,6 @@ from .vector_search import (
 logger = logging.getLogger(__name__)
 
 
-client = Anthropic()
 tavily = TavilyClient()
 
 
