@@ -28,7 +28,10 @@ def setup_logging(level: int = logging.INFO) -> None:
         # format="%(asctime)s [%(levelname)s] %(filename)s - %(message)s",
         format="[%(levelname)s] %(filename)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[logging.StreamHandler()],
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler("app.log", encoding="utf-8"),  # 파일에도 기록
+        ], 
         force=True,
     )
 
