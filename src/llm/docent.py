@@ -1,4 +1,3 @@
-from anthropic import Anthropic
 from relics import Relics, SearchedRelics
 from utils import get_base64_data, leaflet_id, guide_program_id
 import logging
@@ -44,8 +43,8 @@ class ExceptionHandler:
 
 class InstructionHandler:
 
-    # first_present_index = 0
     first_present_index = 1
+    # first_present_index = 0
 
     def __init__(self):
         self.last_guide_id = ""
@@ -150,12 +149,12 @@ class DocentBot:
         if is_next:
             try:
                 self.relics.next()
-            except IndexError as e:
+            except IndexError:
                 self.relics = ExceptionHandler.overflow(self.messages, self.relics)
         else:
             try:
                 self.relics.previous()
-            except ValueError as e:
+            except ValueError:
                 ExceptionHandler.underflow(self.messages, self.relics)
 
         if not self.relics.is_presented():

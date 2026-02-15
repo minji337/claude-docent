@@ -3,6 +3,8 @@ from email.mime.text import MIMEText
 import os
 import logging
 
+logger = logging.getLogger(__name__)
+
 email_success_template = """
 안녕하세요? 문화해설사 예약이 완료되었습니다.
 
@@ -47,7 +49,7 @@ def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str) -> N
     recipients = [receiver, cc]
     msg = MIMEText(body)
     msg["Subject"] = subject
-    msg["From"] = os.getenv("SENDER_EMAIL")
+    msg["From"] = sender
     msg["To"] = receiver
     msg["Cc"] = cc
 
@@ -59,7 +61,7 @@ def send_mail(sender: str, receiver: str, cc: str, subject: str, body: str) -> N
 
     smtp_server.sendmail(sender, recipients, msg.as_string())
     smtp_server.quit()
-    logging.info("메일 전송 완료")
+    logger.info("메일 전송 완료")
 
 
 def send_success_mail(**kwargs) -> None:

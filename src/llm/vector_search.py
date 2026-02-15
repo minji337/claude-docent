@@ -5,7 +5,7 @@ from openai import OpenAI
 from .llm import claude_4_5 as claude
 from .prompt_templates import search_result_filter
 import json
-from utils.utils import setup_logging, project_root
+from utils.utils import project_root
 
 upstage = OpenAI(
     api_key=os.getenv("UPSTAGE_API_KEY"), base_url="https://api.upstage.ai/v1"
@@ -26,14 +26,14 @@ class Similarity:
     score: float = 0
 
 
-class Collecton:
+class Collection:
 
     def __init__(self, name: str):
         self.name = name
         self.file_path = project_root / "data" / "vector_store" / f"{name}"
         self.index: dict[str, DocEmbedding] = {}
 
-    def load(self) -> "Collecton":
+    def load(self) -> "Collection":
         with open(f"{self.file_path}_meta.json", "r", encoding="utf-8") as f:
             docs_list = json.load(f)
 
@@ -73,7 +73,7 @@ class Collecton:
             json.dump(doc_all_list, f, ensure_ascii=False, indent=2)
 
     def query(self, query: str, cutoff=0.4, top_k: int = 60) -> list[Similarity]:
-        query_embedding = self._get_embeddings(query)[0]
+        query_embedding = self._get_embeddings([query])[0]
         similarities: list[Similarity] = []
         for doc_embedding in self.index.values():
             score = np.dot(query_embedding, doc_embedding.embedding) / (
@@ -91,7 +91,7 @@ class Collecton:
         similarities = sorted(similarities, key=lambda x: x.score, reverse=True)[:top_k]
         return similarities
 
-    def _get_embeddings(self, texts: list[str]) -> list[float]:
+    def _get_embeddings(self, texts: list[str]) -> list[list[float]]:
         embeddings = upstage.embeddings.create(input=texts, model="embedding-query")
         return [embedding_data.embedding for embedding_data in embeddings.data]
 
@@ -106,7 +106,6 @@ def get_rrf(
 ) -> list[Similarity]:
 
     weights = weights or [1 / len(ranked_lists)] * len(ranked_lists)
-    # rrf_scores = defaultdict(float)
     rrf_sim_dict: dict[str, Similarity] = {}
 
     for w, ranked in zip(weights, ranked_lists):
@@ -158,6 +157,6 @@ def filter_results(similarities: list[Similarity], query: str) -> list[Similarit
     return filtered_similarities
 
 
-title_collection = Collecton("title").load()
-content_collection = Collecton("content").load()
-description_collection = Collecton("description").load()
+title_collection = Collection("title").load()
+content_collection = Collection("content").load()
+description_collection = Collection("description").load()
