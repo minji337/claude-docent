@@ -131,7 +131,7 @@ class Agent:
             temperature=0.0,
             max_tokens=2048,
             tools=self.tools,
-            tool_system_prompt=self.system_prompt,
+            tool_system_prompt=self.system_prompt.replace("$today", datetime.now().strftime("%Y-%m-%d"))
         )
         logger.info(f"\n\n<<ReAct message>>\n{response.content[0].text}\n\n")
         return response
@@ -245,23 +245,19 @@ class ReservationAgent:
 
     def build_agents(self) -> None:
         self.notice_agent = Agent(
-            system_prompt=notice_system_prompt.format(
-                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
-            ),
+            system_prompt=notice_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session,
+            session=self.session
         )
         self.reply_agent = Agent(
             system_prompt=reply_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session,
+            session=self.session
         )
         self.expiry_check_agent = Agent(
-            system_prompt=expiry_check_system_prompt.format(
-                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
-            ),
+            system_prompt=expiry_check_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session,
+            session=self.session
         )
 
     async def make_reservation(self, application: dict) -> None:
