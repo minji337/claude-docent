@@ -11,6 +11,9 @@ from pydantic import BaseModel, Field
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+KST = ZoneInfo("Asia/Seoul")
 
 from llm.prompt_templates import (
     react_prompt,
@@ -144,7 +147,7 @@ class Agent:
 
         try:
             self.options.system_prompt = self.options.system_prompt.replace(
-                "$today", datetime.now().strftime("%Y-%m-%d")
+                "$today", datetime.now(KST).strftime("%Y-%m-%d")
             )
             
             async with ClaudeSDKClient(options=self.options) as client:
@@ -188,7 +191,7 @@ class ReservationAgent:
         try:
             task.result()
         except Exception as e:
-            traceback.print_exc(e)
+            traceback.print_exc()
             logger.error(f"Slack SocketMode handler terminated with error: {e}")
 
     async def initialize_socket_handler(self):
@@ -271,17 +274,17 @@ class ReservationAgent:
         ]
 
         response = await self.notice_agent.do_work(messages)
-        print(f"response: {response}")
+        logger.info(f"response: {response}")
 
     async def make_reply(self, event: dict):
         messages = [
             {
-                "role": "assistant",
+                "role": "user",
                 "content": json.dumps(event, ensure_ascii=False),
             },
         ]
         response = await self.reply_agent.do_work(messages)
-        print(f"response: {response}")
+        logger.info(f"response: {response}")
 
     async def check_expired_reservations(self) -> None:
         logger.info("만료된 예약 체크 시작")
@@ -312,7 +315,7 @@ class ReservationAgent:
             raise e
 
 
-reservation_agent: ReservationAgent = None
+reservation_agent: ReservationAgent | None = None
 
 
 @app.event("message")
