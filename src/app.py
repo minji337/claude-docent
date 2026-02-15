@@ -10,6 +10,9 @@ from reservation import reservation_agent as reservation_agent_module
 from reservation.reservation_agent import ReservationAgent
 import re
 import datetime
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from zoneinfo import ZoneInfo
 
 
 setup_logging()
@@ -191,7 +194,29 @@ def get_reservation_agent() -> tuple[ReservationAgent, Future]:
     return agent, future
 
 
+@st.cache_resource(show_spinner=False)
+def start_scheduler(_agent: ReservationAgent):
+    scheduler = AsyncIOScheduler()
+
+    # 매일 저녁 19시 30분(KST)에 만료된 예약 체크
+    kst = ZoneInfo("Asia/Seoul")
+    scheduler.add_job(
+        _agent.check_expired_reservations,
+        # CronTrigger(hour=19, minute=52, timezone=kst),
+        CronTrigger(hour=6, minute=0, timezone=kst),
+        id="expiry_check",
+        replace_existing=True,
+    )
+
+    loop = _get_loop()
+    scheduler._eventloop = loop
+    scheduler.start()
+    logging.info("만료 예약 체크 스케줄러 시작")
+    return scheduler
+
+
 resv_agent, mcp_connection_future = get_reservation_agent()
+start_scheduler(resv_agent)
 
 
 def init_page() -> None:
@@ -297,7 +322,8 @@ def main_page(docent_bot: DocentBot) -> None:
                     disabled=st.session_state.get("form_submitted", False),
                 )
 
-                tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+                kst = ZoneInfo("Asia/Seoul")                
+                tomorrow = (datetime.datetime.now(kst) + datetime.timedelta(days=1)).date()
                 weekday_map = ["월", "화", "수", "목", "금"]
                 weekdays = []
                 d = tomorrow
