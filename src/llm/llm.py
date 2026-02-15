@@ -68,7 +68,7 @@ class LLM:
                 container=container,
                 tools=[{"type": "code_execution_20250825", "name": "code_execution"}],
             )
-            logger.info("대화 토큰 사용:", response.usage.model_dump_json())
+            logger.info(f"대화 토큰 사용: {response.usage.model_dump_json()}")
             result_text = ""
             for block in response.content:
                 if hasattr(block, "text"):
