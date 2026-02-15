@@ -73,7 +73,7 @@ class Collection:
             json.dump(doc_all_list, f, ensure_ascii=False, indent=2)
 
     def query(self, query: str, cutoff=0.4, top_k: int = 60) -> list[Similarity]:
-        query_embedding = self._get_embeddings([query])[0]
+        query_embedding = self._get_embeddings(query)[0]
         similarities: list[Similarity] = []
         for doc_embedding in self.index.values():
             score = np.dot(query_embedding, doc_embedding.embedding) / (
@@ -91,7 +91,7 @@ class Collection:
         similarities = sorted(similarities, key=lambda x: x.score, reverse=True)[:top_k]
         return similarities
 
-    def _get_embeddings(self, texts: list[str]) -> list[list[float]]:
+    def _get_embeddings(self, texts: str | list[str]) -> list[list[float]]:
         embeddings = upstage.embeddings.create(input=texts, model="embedding-query")
         return [embedding_data.embedding for embedding_data in embeddings.data]
 

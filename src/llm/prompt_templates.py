@@ -72,8 +72,6 @@ CASE-1에 해당하지 않는 전시물 검색 요청은 모두 `search_relics_w
 
 ## CASE-4: 기본 응답
 위 세 가지 도구 모두 사용하지 않는 경우는 항상 `needs_relic_image`를 사용할 것.
-
-**유의사항**: 지역 박물관에 대한 질문은 항상 `needs_relic_image` 도구를 사용할 것.
 """.strip()
 
 
