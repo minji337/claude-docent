@@ -1,14 +1,14 @@
 import streamlit as st
 import logging
-from utils import setup_logging, logger, get_base64_data, email_to_6digit_hash
+from utils import setup_logging, get_base64_data, email_to_6digit_hash
 from llm import DocentBot, claude
 import datetime
 import asyncio
 import threading
 from concurrent.futures import Future
+from reservation import reservation_agent as reservation_agent_module
 from reservation.reservation_agent import ReservationAgent
 import re
-import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from zoneinfo import ZoneInfo
@@ -155,7 +155,7 @@ def on_progress(func) -> tuple[list, str] | None:
             result = func()
         except Exception as e:
             st.error(f"도슨트 챗봇에서 오류가 발생했습니다: {e}")
-            return "", "오류가 발생했네요. 죄송하지만 잠시 후 다시 시도해주세요."
+            return [], "오류가 발생했네요. 죄송하지만 잠시 후 다시 시도해주세요."
 
     overlay_placeholder.empty()
     return result
@@ -164,7 +164,7 @@ def on_progress(func) -> tuple[list, str] | None:
 @st.cache_resource(show_spinner=False)
 def _get_loop() -> asyncio.AbstractEventLoop:
     """
-    새로운 이벤트 루프를 만들고 별도 데몬 스레드에서 run_forever로 영원히 돌린다.Streamlit 스크립트가 재실행되어도 이 루프는 그대로 유지된다.
+    새로운 이벤트 루프를 만들고 별도 데몬 스레드에서 run_forever로 영원히 돌린다. Streamlit 스크립트가 재실행되어도 이 루프는 그대로 유지된다.
     """
     loop = asyncio.new_event_loop()  # 새 루프
     t = threading.Thread(target=loop.run_forever, daemon=True)
@@ -181,7 +181,15 @@ def run_async(coro) -> Future:
 @st.cache_resource(show_spinner=False)
 def get_reservation_agent() -> tuple[ReservationAgent, Future]:
     agent = ReservationAgent()
-    future = run_async(agent.connect_server())
+    reservation_agent_module.reservation_agent = agent
+
+    # 비동기 초기화 함수
+    async def initialize_agent():
+        await agent.initialize_socket_handler()
+        await agent.connect_server()
+        agent.build_agents()
+
+    future = run_async(initialize_agent())
     return agent, future
 
 
@@ -193,8 +201,8 @@ def start_scheduler(_agent: ReservationAgent):
     kst = ZoneInfo("Asia/Seoul")
     scheduler.add_job(
         _agent.check_expired_reservations,
-        # CronTrigger(hour=19, minute=52, timezone=kst),
-        CronTrigger(hour=6, minute=0, timezone=kst),
+        CronTrigger(hour=4, minute=15, timezone=kst),
+        #CronTrigger(hour=6, minute=0, timezone=kst),
         id="expiry_check",
         replace_existing=True,
     )
@@ -219,11 +227,11 @@ def init_page() -> None:
     st.markdown(
         """
         <div class="intro-text">
-            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h2>
-            <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.<p>
+            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h3>
+            <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.</p>
             <p>
                 저는 이곳 박물관에서 근무하는 인공지능 도슨트 봇 뮤지입니다.<br>
-                이곳에서는 430여 여종의 대한민국 국보/보물 이미지를 소장하고 있습니다.<br>
+                이곳에서는 430여 종의 대한민국 국보/보물 이미지를 소장하고 있습니다.<br>
                 작품 설명은 물론 저의 감상까지도 자세히 말씀드려요.
             </p>
             <p>
@@ -312,8 +320,8 @@ def main_page(docent_bot: DocentBot) -> None:
                     ],
                     disabled=st.session_state.get("form_submitted", False),
                 )
-
-                tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+                kst = ZoneInfo("Asia/Seoul")
+                tomorrow = (datetime.datetime.now(kst) + datetime.timedelta(days=1)).date()
                 weekday_map = ["월", "화", "수", "목", "금"]
                 weekdays = []
                 d = tomorrow
@@ -372,7 +380,7 @@ def main_page(docent_bot: DocentBot) -> None:
                             "%Y.%m.%d %H:%M:%S.%f"
                         ),
                     }
-                    # ① 아직 연결 중이라면: 메시지만 띄우고 함수 종료``
+                    # ① 아직 연결 중이라면: 메시지만 띄우고 함수 종료
                     if not mcp_connection_future.done():
                         st.error(
                             "MCP 서버에 연결 중입니다. 연결이 완료되면 다시 '신청하기'를 눌러 주세요."

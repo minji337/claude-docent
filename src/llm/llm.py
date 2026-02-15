@@ -4,18 +4,15 @@ from .prompt_templates import (
     system_prompt as default_system_prompt,
     tool_system_prompt as default_tool_system_prompt,
 )
-from dotenv import load_dotenv, find_dotenv
 import logging
 from anthropic import AsyncAnthropic
 
 logger = logging.getLogger(__name__)
 
-load_dotenv(find_dotenv(), override=True)
- 
 
 class LLM:
 
-    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt):
+    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt: str):
         self.client = Anthropic()
         self.async_client = AsyncAnthropic()
         self.model = model_name
@@ -75,7 +72,7 @@ class LLM:
                     result_text += block.text + "\n"
             return result_text.strip()
         except Exception as e:
-            logging.error(f"[create_response error] {e}")
+            logger.error(f"[create_response error] {e}")
             raise e
 
     def create_tool_response(
@@ -86,7 +83,7 @@ class LLM:
         max_tokens: int = 2048,
         tool_choice: dict[str, str] = {"type": "auto"},
         tool_system_prompt: str | None = None,
-        stop_sequences: list[str] = [],
+        stop_sequences: list[str] | None = None,
     ) -> Message:
 
         try:
@@ -106,10 +103,10 @@ class LLM:
                 model=self.model,
                 stop_sequences=stop_sequences,
             )
-            print("도구 토큰 사용:", response.usage.model_dump_json())
+            logger.info(f"도구 토큰 사용: {response.usage.model_dump_json()}")
             return response
         except Exception as e:
-            logging.info(f"[LLM ERROR] {e}")
+            logger.info(f"[LLM ERROR] {e}")
             raise e
 
 
