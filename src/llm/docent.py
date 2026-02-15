@@ -213,7 +213,6 @@ class DocentBot:
         for message in self.messages[1:]:
             if isinstance(message["content"], list):
                 text_message: str = message["content"][1]["text"]
-                # text_message: str = message["content"][0]["text"]
             else:
                 text_message = message["content"]
             text_message = text_message.strip()

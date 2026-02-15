@@ -12,7 +12,7 @@ print(f"프로젝트 루트: {PROJECT_ROOT}")
 env_path = PROJECT_ROOT / ".env"
 load_dotenv(dotenv_path=str(env_path), override=True)
 
-# # 스킬 디렉토리 경로
+## 스킬 디렉토리 경로
 SKILL_DIR = PROJECT_ROOT / ".claude" / "skills" / "national-museums"
 
 
@@ -20,7 +20,7 @@ client = Anthropic()
 
 
 def upload_skill(display_title: str) -> str:
-    skill = client.beta.    skills.create(
+    skill = client.beta.skills.create(
         display_title=display_title,
         files=files_from_dir(str(SKILL_DIR)),
         betas=["skills-2025-10-02"],
