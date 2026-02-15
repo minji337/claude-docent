@@ -130,25 +130,24 @@ class Agent:
         mcp_servers: dict,
         allowed_tools: list[str],
     ):
-        self.system_prompt: str = system_prompt
         self.mcp_servers: dict = mcp_servers
         self.allowed_tools: list[str] = allowed_tools
+        self.options = ClaudeAgentOptions(
+            system_prompt=repr(system_prompt),
+            mcp_servers=self.mcp_servers,
+            allowed_tools=self.allowed_tools,
+            permission_mode="bypassPermissions",
+            model="sonnet"
+        )
 
     async def do_work(self, messages: list[dict]) -> dict:
 
         try:
-            options = ClaudeAgentOptions(
-                system_prompt=repr(self.system_prompt),
-                mcp_servers=self.mcp_servers,
-                allowed_tools=self.allowed_tools,
-                permission_mode="bypassPermissions",
-                model="sonnet",
-                # model="haiku",
+            self.options.system_prompt = self.options.system_prompt.replace(
+                "$today", datetime.now().strftime("%Y-%m-%d")
             )
-
-            print(f"options: {options}")
-
-            async with ClaudeSDKClient(options=options) as client:
+            
+            async with ClaudeSDKClient(options=self.options) as client:
                 user_content = messages[-1]["content"]
                 if isinstance(user_content, list):
                     user_content = user_content[0].get("text", "")
@@ -235,23 +234,19 @@ class ReservationAgent:
         ]
 
         self.notice_agent = Agent(
-            system_prompt=notice_system_prompt.format(
-                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
-            ),
+            system_prompt=notice_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools,
+            allowed_tools=allowed_tools
         )
         self.reply_agent = Agent(
             system_prompt=reply_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools,
+            allowed_tools=allowed_tools
         )
         self.expiry_check_agent = Agent(
-            system_prompt=expiry_check_system_prompt.format(
-                react_prompt=react_prompt, today=datetime.now().strftime("%Y-%m-%d")
-            ),
+            system_prompt=expiry_check_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools,
+            allowed_tools=allowed_tools
         )
 
     async def make_reservation(self, application: dict) -> None:
