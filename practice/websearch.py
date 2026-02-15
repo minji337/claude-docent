@@ -4,7 +4,7 @@ client = anthropic.Anthropic()
 messages = [
     {
         "role": "user",
-        "content": "한국 증시에 대해 100자 이내로 조사해."
+        "content": "한국 증시 기사를 조사한 뒤 100자 이내로 요약해."
     }
 ]
 
@@ -27,6 +27,8 @@ response = client.messages.create(
 #       "blocked_domains": ["untrustedsource.com"],
     }]
 )
+
+print(response)
 
 def get_citations_from_response(response):
     message = ""
