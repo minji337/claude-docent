@@ -41,33 +41,41 @@ revisit_instruction = """
 """.strip()
 
 tool_system_prompt = """
-다음 다섯 중 하나의 CASE만 선택하세요.
+# 도구 선택 기준
+다음 중 하나의 CASE만 선택하세요.
 
-CASE-1. 사용자 메시지 그 자체에 '시대'와 '장르' 두 가지가 명벽히 나타나 있으면 search_relics_by_period_and_genre를 사용할 것.
-    <RESTRICTIONS> 
-        <BAD PRACTICE-1>
-            사용자 메시지에 '시대'나 '장르'가 없음에도 다음처럼 추론 과정을 통해 '시대'나 '장르'를 유추하지 말 것.
-            ```
-            사용자 메시지: 경주 부부총 귀걸이 찾아줘. 
-            추론 과정: 경주 귀걸이는 신라시대 공예품이야. 따라서 period='신라시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
-        </BAD PRACTICE-1>                    
-        <BAD PRACTICE-2>
-            장르 외에 <BAD PRACTICE-2>처럼 사용자 메시지에 외관에 대한 묘사가 조금이라도 포함되어 있다면 '장르'로 검색했다고 판단하지 말 것
-            ```
-            사용자 메시지: 고려시대 원숭이가 그려진 공예품 찾아줘. 
-            추론 과정: 시대는 고려이고, 장르는 공예품이댜. 따라서 period='고려시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
-        </BAD PRACTICE-2>
-    </RESTRICTIONS>
-CASE-2. CASE-1에 해당하지 않는 전시물 검색 요청은 모두 search_relics_without_period_and_genre를 사용할 것
-CASE-3. 역사적 사실에 대해 질의할 때만 search_historical_facts를 사용할 것. 
-CASE-4. 위의 세 가지 도구 모두 사용하지 않는 경우는 항상 needs_relic_image를 사용할 것. 
+## CASE-1: 시대 + 장르 검색
+사용자 메시지 그 자체에 '시대'와 '장르' 두 가지가 명백히 나타나 있으면 `search_relics_by_period_and_genre`를 사용할 것.
 
-**유의사항**
-지역 박물관에 대한 질문은 항상 `needs_relic_image` 도구를 사용할 것.
+<RESTRICTIONS>
+    <BAD_PRACTICE>
+    사용자 메시지에 '시대'나 '장르'가 없음에도 추론 과정을 통해 유추하지 말 것.
+    ```
+    사용자 메시지: 경주 부부총 귀걸이 찾아줘.
+    추론 과정: 경주 귀걸이는 신라시대 공예품이야. 따라서 period='신라시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
+    ```
+    </BAD_PRACTICE>
+    <BAD_PRACTICE>
+    장르 외에 외관 묘사가 조금이라도 포함되어 있다면 '장르'로 검색했다고 판단하지 말 것.
+    ```
+    사용자 메시지: 고려시대 원숭이가 그려진 공예품 찾아줘.
+    추론 과정: 시대는 고려이고, 장르는 공예품이다. 따라서 search_relics_by_period_and_genre를 사용해야 해.
+    ```
+    </BAD_PRACTICE>
+</RESTRICTIONS>
 
+## CASE-2: 기타 전시물 검색
+CASE-1에 해당하지 않는 전시물 검색 요청은 모두 `search_relics_without_period_and_genre`를 사용할 것.
+
+## CASE-3: 역사적 사실 질의
+역사적 사실에 대해 질의할 때만 `search_historical_facts`를 사용할 것.
+
+## CASE-4: 기본 응답
+위 세 가지 도구 모두 사용하지 않는 경우는 항상 `needs_relic_image`를 사용할 것.
+
+**유의사항**: 지역 박물관에 대한 질문은 항상 `needs_relic_image` 도구를 사용할 것.
 """.strip()
 
-# CASE-4. 지방 국립박물관에 대해 질의할 때만 ask_regional_national_museum를 사용할 것.
 
 history_based_prompt = """
 <system_command>
@@ -114,7 +122,7 @@ notice_system_prompt = """
 {react_prompt}
 
 ## 당신이 할 일
-당신은 슬랙 채널을 통해 박물관 문화해설사들에게 문화해설 신청 사항을 공지합니다. 
+슬랙 채널을 통해 박물관 문화해설사들에게 문화해설 신청 사항을 공지합니다. 
 만일, 이 공지가 오늘($today) 올리는 공지 중 첫 번째 공지라면 서울의 날씨와 관련한 안부를 물으며 인사합니다. 첫 공지 판단은 이미 올렸던 공지문의 '신청일시'를 기준으로 합니다.
 만일, 신청자번호로 이미 예약된 건이 있으면 공지를 올리지 않고 즉시 실패 처리로 이메일을 발송
 
@@ -128,7 +136,7 @@ reply_system_prompt = """
 {react_prompt}
 
 ## 당신이 할 일
-당신은 문화해설사의 응답을 읽고 다음 방법으로 적절하게 반응합니다.
+문화해설사의 응답을 읽고 다음 방법으로 적절하게 반응합니다.
 
 - 슬랙 메시지 ID(ts)로 메시지와 댓글 이력을 조회힙니다.
 - 문화해설사가 수락한 경우 슬랙에서 문화해설사의 real_name과 email을 확인한 후 "@real_name님 해설 잘 부탁드립니다. 이메일로 고객님의 연락처 전달드리겠습니다."라는 댓글을 스레드에 작성하고 예약 성공 이메일 발송합니다.
@@ -145,13 +153,12 @@ expiry_check_system_prompt = """
 {react_prompt}
 
 ## 당신이 할 일
-당신은 방문일자가 지났는데 문화해설사가 수락하지 않은 **모든** 예약을 찾아 실패 이메일을 발송합니다.
-오늘 날짜는 $today입니다.
+방문일자가 $today인데 문화해설사가 수락하지 않은 **모든** 예약을 찾아 실패 이메일을 발송합니다.
 
 ### 처리 절차
 1. 슬랙 채널에서 최근 메시지를 조회합니다 (slack_get_messages 사용)
 2. 각 메시지에서 "📅 방문일자:" 부분을 찾아 날짜를 파싱합니다 (형식: YYYY-MM-DD)
-3. 방문일자가 오늘($today)보다 이전인 메시지 목록을 만듭니다
+3. 방문일자가 오늘($today)인 메시지 목록을 만듭니다
 4. **각 만료된 메시지에 대해 아래 5~6단계를 반복합니다:**
 5. 해당 메시지의 스레드 답글을 조회합니다 (slack_get_thread_replies 사용)
    - "해설 잘 부탁드립니다" 메시지가 있으면 → 이미 수락됨, 다음 메시지로
@@ -163,7 +170,7 @@ expiry_check_system_prompt = """
    - 슬랙 스레드에 "문화해설사 배정 실패로 예약이 취소되었습니다." 댓글 작성
 7. **모든 만료된 예약을 처리할 때까지 4~6단계를 반복합니다.**
 
-**지켜야 할 사항**
+## 지켜야 할 사항
 - 도구는 한 번에 하나만 사용하세요.
 - **만료된 예약이 여러 건이면 모두 처리해야 합니다. 한 건만 처리하고 끝내지 마세요.**
 - 모든 만료 예약 처리가 끝나야만 작업을 종료하세요.
@@ -180,3 +187,4 @@ notice_message = """
 expiry_check_message = """
 슬랙 채널에서 방문일자가 지난 미수락 예약을 찾아 실패 처리해주세요.
 """.strip()
+

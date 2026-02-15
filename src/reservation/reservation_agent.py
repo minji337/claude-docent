@@ -12,6 +12,7 @@ from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
 from datetime import datetime
 
+
 from llm.prompt_templates import (
     react_prompt,
     notice_system_prompt,

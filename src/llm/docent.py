@@ -161,7 +161,6 @@ class DocentBot:
         if not self.relics.is_presented():
             self._present_relic()
 
-    # 역사적 사실 검색 실습용
     def answer(self, user_input: str) -> tuple[list, str]:
         self.instruction.check_and_add(self.relics, self.messages)
         self.messages.append({"role": "user", "content": user_input})
