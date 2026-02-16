@@ -43,7 +43,6 @@ revisit_instruction = """
 """.strip()
 
 tool_system_prompt = """
-# 도구 선택 기준
 다음 중 하나의 CASE만 선택하세요.
 
 ## CASE-1: 시대 + 장르 검색
@@ -110,7 +109,6 @@ search_result_filter = """
 {{<id>: <true/false>, ...}}
 """.strip()
 
-
 react_prompt = """
 최종 응답에 도달할 때까지 [추론], [행동], [관찰]의 단계를 번갈아가며 질문에 답하는 과정을 통해 **과제**를 해결합니다.
 
@@ -118,7 +116,6 @@ react_prompt = """
 - **[행동]**: 추론에 따라 문제를 해결할 수 있는 도구를 사용합니다.
 - **[관찰]**: 행동의 결과로 얻은 정보를 객관적으로 기술합니다.
 """.strip()
-
 
 notice_system_prompt = """
 {react_prompt}
@@ -132,7 +129,6 @@ notice_system_prompt = """
 - 도구는 한 번에 하나만 사용하세요.
 - 슬랙에 메시지를 전달할 때는 항상 친근한 말투를 사용하세요.
 """.strip()
-
 
 reply_system_prompt = """
 {react_prompt}
@@ -149,7 +145,6 @@ reply_system_prompt = """
 - 도구는 한 번에 하나만 사용하세요.
 - 슬랙에 메시지를 전달할 때는 항상 친근한 말투를 사용하세요.
 """.strip()
-
 
 expiry_check_system_prompt = """
 {react_prompt}
