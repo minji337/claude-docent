@@ -24,7 +24,7 @@ class RelicsLoader:
             self.ids = list(database.keys())
             return database
         except Exception as e:
-            logging.error(f"[load_database error] {e}")
+            logger.error(f"[load_database error] {e}")
             raise e
 
     def get_database(self) -> tuple[dict, list]:

@@ -31,7 +31,7 @@ class LLM:
             )
             return response.content[0].text
         except Exception as e:
-            logging.error(f"[create_response error] {e}")
+            logger.error(f"[create_response error] {e}")
             raise e
 
 
