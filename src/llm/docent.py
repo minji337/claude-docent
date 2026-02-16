@@ -14,7 +14,7 @@ class DocentBot:
 
     def _overflow(self) -> None:
         self.messages.append(
-            {"role": "assistant", "content": "준비한 작품울 모두 소개했습니다."}
+            {"role": "assistant", "content": "준비한 작품을 모두 소개했습니다."}
         )
 
     def _underflow(self) -> None:

@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from typing import Any
 
 class Relics:
 
@@ -31,15 +31,15 @@ class Relics:
         return self.ids[self.index]
 
     @property
-    def current(self) -> dict:
+    def current(self) -> dict[str, Any]:
         current_relic = self.database[self.current_id]
         return current_relic
 
-    def next(self) -> dict:
+    def next(self) -> dict[str, Any]:
         self.index += 1
         return self.current
 
-    def previous(self) -> dict:
+    def previous(self) -> dict[str, Any]:
         if self.index == 0:
             raise ValueError("현재 첫 번째 작품을 보고 있습니다.")
         else:
@@ -59,7 +59,7 @@ class Relics:
     def is_presented(self, id: str | None = None) -> bool:
         return (id or self.current_id) in self.presented
 
-    def current_to_card(self) -> dict:
+    def current_to_card(self) -> dict[str, str]:
         return {
             "header": self.header,
             "img_path": self.current["img_path"],
