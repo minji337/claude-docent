@@ -1,9 +1,9 @@
 import streamlit as st
 import logging
-from utils import setup_logging, logger, get_base64_data
+from utils import setup_logging, get_base64_data
 from llm import DocentBot
 
-setup_logging()
+setup_logging() 
 
 logger = logging.getLogger(__name__)
 logger.info("도슨트 봇 시작 >>>>>")

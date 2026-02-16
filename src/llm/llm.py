@@ -72,7 +72,7 @@ class LLM:
             logger.info(f"도구 토큰 사용: {response.usage.model_dump_json()}")
             return response
         except Exception as e:
-            logger.info(f"[LLM ERROR] {e}")
+            logger.error(f"[LLM ERROR] {e}")
             raise e
 
 
