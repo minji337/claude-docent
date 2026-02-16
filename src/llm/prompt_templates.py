@@ -42,34 +42,36 @@ revisit_instruction = """
 """.strip()
 
 tool_system_prompt = """
-# 도구 선택 기준
-다음 넷 중 하나의 CASE만 선택하세요.
+다음 중 하나의 CASE만 선택하세요.
 
 ## CASE-1: 시대 + 장르 검색
-CASE-1. 사용자 메시지 그 자체에 '시대'와 '장르' 두 가지가 명벽히 나타나 있으면 search_relics_by_period_and_genre를 사용할 것.
-    <RESTRICTIONS> 
-        <BAD PRACTICE-1>
-            사용자 메시지에 '시대'나 '장르'가 없음에도 다음처럼 추론 과정을 통해 '시대'나 '장르'를 유추하지 말 것.
-            ```
-            사용자 메시지: 경주 부부총 귀걸이 찾아줘. 
-            추론 과정: 경주 귀걸이는 신라시대 공예품이야. 따라서 period='신라시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
-        </BAD PRACTICE-1>                    
-        <BAD PRACTICE-2>
-            장르 외에 <BAD PRACTICE-2>처럼 사용자 메시지에 외관에 대한 묘사가 조금이라도 포함되어 있다면 '장르'로 검색했다고 판단하지 말 것
-            ```
-            사용자 메시지: 고려시대 원숭이가 그려진 공예품 찾아줘. 
-            추론 과정: 시대는 고려이고, 장르는 공예품이댜. 따라서 period='고려시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
-        </BAD PRACTICE-2>
-    </RESTRICTIONS>
+사용자 메시지 그 자체에 '시대'와 '장르' 두 가지가 명백히 나타나 있으면 `search_relics_by_period_and_genre`를 사용할 것.
+
+<RESTRICTIONS>
+    <BAD_PRACTICE>
+    사용자 메시지에 '시대'나 '장르'가 없음에도 추론 과정을 통해 유추하지 말 것.
+    ```
+    사용자 메시지: 경주 부부총 귀걸이 찾아줘.
+    추론 과정: 경주 귀걸이는 신라시대 공예품이야. 따라서 period='신라시대', genre='공예품'이므로 search_relics_by_period_and_genre를 사용해야 해.
+    ```
+    </BAD_PRACTICE>
+    <BAD_PRACTICE>
+    장르 외에 외관 묘사가 조금이라도 포함되어 있다면 '장르'로 검색했다고 판단하지 말 것.
+    ```
+    사용자 메시지: 고려시대 원숭이가 그려진 공예품 찾아줘.
+    추론 과정: 시대는 고려이고, 장르는 공예품이다. 따라서 search_relics_by_period_and_genre를 사용해야 해.
+    ```
+    </BAD_PRACTICE>
+</RESTRICTIONS>
 
 ## CASE-2: 기타 전시물 검색
-CASE-1에 해당하지 않는 전시물 검색 요청은 모두 search_relics_without_period_and_genre를 사용할 것
+CASE-1에 해당하지 않는 전시물 검색 요청은 모두 `search_relics_without_period_and_genre`를 사용할 것.
 
 ## CASE-3: 역사적 사실 질의
-역사적 사실에 대해 질의할 때만 사용할 것. 박물관 관련된 질문에는 웹 검색을 사용하지 말 것.
+역사적 사실에 대해 질의할 때만 `search_historical_facts`를 사용할 것.
 
 ## CASE-4: 기본 응답
-위의 세 가지 도구 모두 사용하지 않는 경우는 항상 needs_relic_image를 사용할 것.
+위 세 가지 도구 모두 사용하지 않는 경우는 항상 `needs_relic_image`를 사용할 것.
 """.strip()
 
 

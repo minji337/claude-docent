@@ -38,7 +38,7 @@ class LLM:
             logger.info(f"대화 토큰 사용: {response.usage.model_dump_json()}")
             return response.content[0].text
         except Exception as e:
-            logging.error(f"[create_response error] {e}")
+            logger.error(f"[create_response error] {e}")
             raise e
 
     def create_tool_response(
@@ -72,7 +72,7 @@ class LLM:
             logger.info(f"도구 토큰 사용: {response.usage.model_dump_json()}")
             return response
         except Exception as e:
-            logging.info(f"[LLM ERROR] {e}")
+            logger.error(f"[LLM ERROR] {e}")
             raise e
 
 
