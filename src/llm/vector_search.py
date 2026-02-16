@@ -5,7 +5,7 @@ from openai import OpenAI
 from .llm import claude_4_5 as claude
 from .prompt_templates import search_result_filter
 import json
-from utils.utils import setup_logging, project_root
+from utils.utils import project_root
 
 upstage = OpenAI(
     api_key=os.getenv("UPSTAGE_API_KEY"), base_url="https://api.upstage.ai/v1"
@@ -25,6 +25,7 @@ class Similarity:
     doc: str
     score: float = 0
 
+
 class Collection:
 
     def __init__(self, name: str):
@@ -43,7 +44,7 @@ class Collection:
                 id=doc["id"], doc=doc["doc"], embedding=embedding.tolist()
             )
 
-        return self        
+        return self
 
     def add_doc(self, id: str, doc: str) -> None:
         self.index[id] = DocEmbedding(id=id, doc=doc)
@@ -51,7 +52,7 @@ class Collection:
     def build(self) -> None:
         doc_embeddings_all = list(self.index.values())
         doc_embeddings_chunks = [
-            doc_embeddings_all[i:i+100] 
+            doc_embeddings_all[i : i + 100]
             for i in range(0, len(doc_embeddings_all), 100)
         ]
 
@@ -66,7 +67,7 @@ class Collection:
                 embedding_all_list.append(embedding)
 
         embedding_np_array = np.array(embedding_all_list)
-        np.save(f"{self.file_path}_embeddings.npy", embedding_np_array)        
+        np.save(f"{self.file_path}_embeddings.npy", embedding_np_array)
 
         with open(f"{self.file_path}_meta.json", "w", encoding="utf-8") as f:
             json.dump(doc_all_list, f, ensure_ascii=False, indent=2)
@@ -83,21 +84,20 @@ class Collection:
                 continue
             similarities.append(
                 Similarity(
-                    id=doc_embedding.id,
-                    doc=doc_embedding.doc,
-                    score=float(score)
+                    id=doc_embedding.id, doc=doc_embedding.doc, score=float(score)
                 )
             )
 
         similarities = sorted(similarities, key=lambda x: x.score, reverse=True)[:top_k]
         return similarities
 
-    def _get_embeddings(self, texts: list[str]) -> list[float]:
+    def _get_embeddings(self, texts: str | list[str]) -> list[list[float]]:
         embeddings = upstage.embeddings.create(input=texts, model="embedding-query")
-        return [embedding_data.embedding for embedding_data in embeddings.data]            
+        return [embedding_data.embedding for embedding_data in embeddings.data]
 
     def __len__(self) -> int:
         return len(self.index)
+
 
 def get_rrf(
     ranked_lists: list[list[Similarity]],
@@ -106,7 +106,6 @@ def get_rrf(
 ) -> list[Similarity]:
 
     weights = weights or [1 / len(ranked_lists)] * len(ranked_lists)
-    # rrf_scores = defaultdict(float)
     rrf_sim_dict: dict[str, Similarity] = {}
 
     for w, ranked in zip(weights, ranked_lists):

@@ -5,16 +5,21 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "anthropic>=0.52.1",
-    "black>=25.1.0",
-    "bs4>=0.0.2",
-    "dill>=0.4.0",
-    "fastmcp==2.3.0",
-    "ipython>=9.2.0",
-    "mcp>=1.9.2",
+    "anthropic==0.75.0",
+    "black==25.9.0",
+    "bs4==0.0.2",
+    "dill==0.4.0",
+    "fastmcp==2.14.2",
+    "ipython==9.6.0",
+    "mcp==1.25.0",
     "numpy>=2.2.6",
     "openai==1.66.3",
-    "pillow>=11.2.1",
-    "streamlit>=1.45.1",
-    "tavily-python>=0.7.3",
+    "pillow==11.3.0",
+    "streamlit==1.50.0",
+    "tavily-python==0.7.12",
+    "slack-bolt==1.27.0",
+    "aiohttp==3.13.2",
+    "claude-agent-sdk==0.1.22",
+    "apscheduler==3.11.2",
+    "tzlocal==5.3.1"
 ]

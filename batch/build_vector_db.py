@@ -116,7 +116,7 @@ class Collection:
         similarities = sorted(similarities, key=lambda x: x.score, reverse=True)[:top_k]
         return similarities
 
-    def _get_embeddings(self, texts: list[str]) -> list[float]:
+    def _get_embeddings(self, texts: str | list[str]) -> list[list[float]]:
         embeddings = upstage.embeddings.create(input=texts, model="embedding-query")
         return [embedding_data.embedding for embedding_data in embeddings.data]            
 
