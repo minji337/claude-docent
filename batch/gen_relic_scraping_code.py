@@ -115,33 +115,33 @@ prompt = f"""
 ```
 <INSTRUCTIONS>
 다음 지침에 의거하여 전시물 데이터베이스를 구축하는 파이썬 프로그램을 작성합니다.
-<JSON 정보 추출 함수 작성>
-1. data/relic_links.json 파일을 읽습니다. 다음은 샘플입니다. 
-    [
-        {{"page": 1, "query": "?schM=view&relicId=348"}},
-        {{"page": 1, "query": "?schM=view&relicId=349"}},
-        ...
-    ]
-2. [base_url]에 “query”를 결합해서 URL을 만듭니다.
-3. url에 접근하여 HTML을 수신받은 후 Beautifulsoup 파서를 통해  [relic_data_sample] 형식의 데이터를 만듭니다. 
-    - 이때 Key는 relicId로 합니다.
-    - [relic_index_sample] 데이터 구성은 [html_xxx_sample] 정보를 참조하되, 이미지 파일은 <div class="swiper-container gallery-thumbs">태그 내의 첫 번째 이미지 정보를 가져옵니다. 
-4. 결과는 relic_index_json 변수에 담습니다.
-5. 서버 부하 방지를 위해 한 번 순회시마다 1초의 휴지를 둡니다.
-</JSON 정보 추출 함수 작성 지침>       
-
-<공공누리 유형 점검 함수 작성>
-relic_index_json['copyright_img'] != https://www.kogl.or.kr/open/web/images/images_2014/codetype/new_img_opentype01.png인 전시물은 삭제하고 결과를 출력합니다.
-</공공누리 유형 점검 함수 작성>
-
-<데이터베이스 구축 함수 작성>
-1. data 폴더 아래에 database 폴더를 만듭니다. 존재하면 삭제하고 다시 만듭니다.
-2. database 폴더에 <JSON 정보 추출 함수 작성 지침/>에서 만든 relic_index_json을 relic_index.json이라는 파일로 만듭니다.
-3. database 폴더 밑에 relciId를 이름으로하여 하위 폴더를 만듭니다.
-4. 하위 폴더에 다음 정보를 작성합니다.
-    1) relic_index_json 중 relicId에 해당하는 정보로 relic_data.json 파일을 만듭니다.
-    2) 전시물 이미지 파일의 경로를 확인하고 다운로드합니다.
-</데이터베이스 구축 함수 작성>
+    <JSON 정보 추출 함수 작성>
+    1. data/relic_links.json 파일을 읽습니다. 다음은 샘플입니다. 
+        [
+            {{"page": 1, "query": "?schM=view&relicId=348"}},
+            {{"page": 1, "query": "?schM=view&relicId=349"}},
+            ...
+        ]
+    2. [base_url]에 “query”를 결합해서 URL을 만듭니다.
+    3. url에 접근하여 HTML을 수신받은 후 Beautifulsoup 파서를 통해  [relic_data_sample] 형식의 데이터를 만듭니다. 
+        - 이때 Key는 relicId로 합니다.
+        - [relic_index_sample] 데이터 구성은 [html_xxx_sample] 정보를 참조하되, 이미지 파일은 <div class="swiper-container gallery-thumbs">태그 내의 첫 번째 이미지 정보를 가져옵니다. 
+    4. 결과는 relic_index_json 변수에 담습니다.
+    5. 서버 부하 방지를 위해 한 번 순회시마다 1초의 휴지를 둡니다.
+    </JSON 정보 추출 함수 작성 지침>       
+    
+    <공공누리 유형 점검 함수 작성>
+    relic_index_json['copyright_img'] != https://www.kogl.or.kr/open/web/images/images_2014/codetype/new_img_opentype01.png인 전시물은 삭제하고 결과를 출력합니다.
+    </공공누리 유형 점검 함수 작성>
+    
+    <데이터베이스 구축 함수 작성>
+    1. data 폴더 아래에 database 폴더를 만듭니다. 존재하면 삭제하고 다시 만듭니다.
+    2. database 폴더에 <JSON 정보 추출 함수 작성 지침/>에서 만든 relic_index_json을 relic_index.json이라는 파일로 만듭니다.
+    3. database 폴더 밑에 relciId를 이름으로하여 하위 폴더를 만듭니다.
+    4. 하위 폴더에 다음 정보를 작성합니다.
+        1) relic_index_json 중 relicId에 해당하는 정보로 relic_data.json 파일을 만듭니다.
+        2) 전시물 이미지 파일의 경로를 확인하고 다운로드합니다.
+    </데이터베이스 구축 함수 작성>
 </INSTRUCTIONS>    
 
 <RESPONSE_FORMAT>

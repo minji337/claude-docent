@@ -1,6 +1,6 @@
 import streamlit as st
 import logging
-from utils import setup_logging, logger, get_base64_data
+from utils import setup_logging, get_base64_data
 from llm import DocentBot
 
 setup_logging()
@@ -159,11 +159,11 @@ def init_page() -> None:
     st.markdown(
         """
         <div class="intro-text">
-            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h2>
-            <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.<p>
+            <h3>AI 도슨트 👩‍🦰 뮤지입니다</h3>
+            <p>안녕하세요! 저희 K-디지털 박물관에 오신 것을 환영합니다.</p>
             <p>
                 저는 이곳 박물관에서 근무하는 인공지능 도슨트 봇 뮤지입니다.<br>
-                이곳에서는 430여 여종의 대한민국 국보/보물 이미지를 소장하고 있습니다.<br>
+                이곳에서는 430여 종의 대한민국 국보/보물 이미지를 소장하고 있습니다.<br>
                 작품 설명은 물론 저의 감상까지도 자세히 말씀드려요.
             </p>
             <p>

@@ -31,7 +31,7 @@ class DocentBot:
             )
             return response.content[0].text
         except Exception as e:
-            logger.info(f"Error: {str(e)}")
+            logger.error(f"Error: {str(e)}")
             raise e
 
     def _add_guide_instruction(self) -> None:

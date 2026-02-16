@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # 웹 페이지 가져오기
-url = "https://docs.anthropic.com/ko/docs/welcome"
+url = "https://anthropic.com"
 response = requests.get(url)
 
 # BeautifulSoup 객체 생성
