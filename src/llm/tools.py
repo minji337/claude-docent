@@ -123,7 +123,7 @@ def search_relics_without_period_and_genre(
     return results, message
 
 
-def search_historical_facts(query: str) -> tuple[list[tuple[str, str]], list[str]]:
+def search_historical_facts(query: str) -> tuple[list, list]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
@@ -131,7 +131,6 @@ def search_historical_facts(query: str) -> tuple[list[tuple[str, str]], list[str
         search_depth="advanced"
     )
     logger.info(f"[query] {query}")
-    logger.info(f"[tavily_response] {tavily_response['answer']}")
     references: list[tuple[str, str]] = []
     contents: list[str] = []
     for result in tavily_response["results"]:
@@ -182,4 +181,5 @@ def use_tools(
             "items": tool_content.input["is_image_needed"],
         }
         message_dict = None
+    logger.info(f"[tool_data type] {tool_data['type']}")
     return tool_data, message_dict

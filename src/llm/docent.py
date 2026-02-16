@@ -44,6 +44,7 @@ class ExceptionHandler:
 class InstructionHandler:
 
     first_present_index = 1
+    # first_present_index = 0
 
     def __init__(self):
         self.last_guide_id = ""
