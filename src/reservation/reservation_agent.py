@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 from slack_bolt.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.aiohttp import AsyncSocketModeHandler
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from llm import claude_4_5 as claude
 
@@ -35,6 +36,8 @@ from .email_sender import (
 )
 
 logger = logging.getLogger(__name__)
+
+KST = ZoneInfo("Asia/Seoul")
 
 SMITHERY_API_KEY = os.getenv("SMITHERY_API_KEY")
 
@@ -131,7 +134,7 @@ class Agent:
             temperature=0.0,
             max_tokens=2048,
             tools=self.tools,
-            tool_system_prompt=self.system_prompt.replace("$today", datetime.now().strftime("%Y-%m-%d"))
+            tool_system_prompt=self.system_prompt.replace("$today", datetime.now(KST).strftime("%Y-%m-%d"))
         )
         logger.info(f"\n\n<<ReAct message>>\n{response.content[0].text}\n\n")
         return response
@@ -199,7 +202,7 @@ class ReservationAgent:
         try:
             task.result()
         except Exception as e:
-            traceback.print_exc(e)
+            traceback.print_exc()
             logger.error(f"Slack SocketMode handler terminated with error: {e}")
 
     async def initialize_socket_handler(self):  # STEP-③ ~ STEP-⑦
@@ -322,7 +325,7 @@ class ReservationAgent:
             raise e
 
 
-reservation_agent: ReservationAgent = None
+reservation_agent: ReservationAgent | None = None
 
 
 @app.event("message")  # STEP-②

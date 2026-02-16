@@ -1,4 +1,3 @@
-from anthropic import Anthropic
 from typing import Literal, Optional, Dict, TypedDict
 from pydantic import BaseModel, Field
 from .llm import claude_4_5 as claude
@@ -59,7 +58,7 @@ tools = [
     },    
     {
         "name": "search_historical_facts",
-        "description": "역사적 사실에 대한 사용자의 질문에 답히기 위해 사용",
+        "description": "역사적 사실에 대한 사용자의 질문에 답하기 위해 사용",
         "input_schema": {
             "type": "object",
             "properties": {
@@ -116,7 +115,6 @@ def search_relics_without_period_and_genre(
     results = {}
     for similarity in filtered_similarities:
         results[similarity.id] = database[similarity.id]
-        # results[similarity.id]["is_presented"] = False
     message = (
         f"요청하신 전시물이 {len(results)}점 검색되었습니다. [다음] 버튼을 클릭해주세요."
         if len(results) > 0
@@ -125,7 +123,7 @@ def search_relics_without_period_and_genre(
     return results, message
 
 
-def search_historical_facts(query) -> tuple[list, str]:
+def search_historical_facts(query: str) -> tuple[list[tuple[str, str]], list[str]]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
@@ -167,7 +165,7 @@ def use_tools(
         message_dict = {"role": "assistant", "content": message}
     elif tool_content.name == "search_relics_without_period_and_genre":
         data, message = search_relics_without_period_and_genre(
-            tool_content.input["query"], database, messages[-1]
+            tool_content.input["query"], database, messages[-1]["content"]
         )
         tool_data: ToolData = {"type": "relics", "items": data}
         message_dict = {"role": "assistant", "content": message}
@@ -184,5 +182,4 @@ def use_tools(
             "items": tool_content.input["is_image_needed"],
         }
         message_dict = None
-    logger.info(f"[tool_data type] {tool_data['type']}")
     return tool_data, message_dict

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class LLM:
 
-    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt):
+    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt: str):
         self.client = Anthropic()
         self.model = model_name
         self.system_prompt = system_prompt
@@ -35,10 +35,10 @@ class LLM:
                 stop_sequences=stop_sequences,
                 extra_headers={"anthropic-beta": "files-api-2025-04-14"},
             )
-            print("대화 토큰 사용:", response.usage.model_dump_json())
+            logger.info(f"대화 토큰 사용: {response.usage.model_dump_json()}")
             return response.content[0].text
         except Exception as e:
-            logging.error(f"[create_response error] {e}")
+            logger.error(f"[create_response error] {e}")
             raise e
 
     def create_tool_response(
@@ -47,10 +47,14 @@ class LLM:
         tools: dict,
         temperature: float = 0,
         max_tokens: int = 2048,
-        tool_choice: dict[str, str] = {"type": "auto"},
+        tool_choice: dict[str, str] | None = None,
         tool_system_prompt: str | None = None,
-        stop_sequences: list[str] = [],
+        stop_sequences: list[str] | None = None,
     ) -> Message:
+        if tool_choice is None:
+            tool_choice = {"type": "auto"}
+        if stop_sequences is None:
+            stop_sequences = []
 
         try:
             response = self.client.messages.create(
@@ -69,10 +73,10 @@ class LLM:
                 model=self.model,
                 stop_sequences=stop_sequences,
             )
-            print("도구 토큰 사용:", response.usage.model_dump_json())
+            logger.info(f"도구 토큰 사용: {response.usage.model_dump_json()}")
             return response
         except Exception as e:
-            logging.info(f"[LLM ERROR] {e}")
+            logger.error(f"[LLM ERROR] {e}")
             raise e
 
 
