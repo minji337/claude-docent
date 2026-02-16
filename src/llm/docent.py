@@ -1,4 +1,3 @@
-from anthropic import Anthropic
 from relics import Relics, SearchedRelics
 from utils import get_base64_data
 import logging
@@ -113,12 +112,12 @@ class DocentBot:
         if is_next:
             try:
                 self.relics.next()
-            except IndexError as e:
+            except IndexError:
                 self.relics = ExceptionHandler.overflow(self.messages, self.relics)
         else:
             try:
                 self.relics.previous()
-            except ValueError as e:
+            except ValueError:
                 ExceptionHandler.underflow(self.messages, self.relics)
 
         if not self.relics.is_presented(): 

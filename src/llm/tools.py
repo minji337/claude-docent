@@ -1,4 +1,3 @@
-from anthropic import Anthropic
 from typing import Literal, Optional, Dict, TypedDict
 from pydantic import BaseModel, Field
 from .llm import claude_4_5 as claude
@@ -69,7 +68,7 @@ def search_relics_by_period_and_genre(
     return results, message
 
 
-def search_historical_facts(query) -> tuple[list, str]:
+def search_historical_facts(query) -> tuple[list, list]:
     tavily_response = tavily.search(
         query=query,
         include_domains=["ko.wikipedia.org", "encykorea.aks.ac.kr"],
@@ -77,7 +76,6 @@ def search_historical_facts(query) -> tuple[list, str]:
         search_depth="advanced"
     )
     logger.info(f"[query] {query}")
-    logger.info(f"[tavily_response] {tavily_response['answer']}")
     references: list[tuple[str, str]] = []
     contents: list[str] = []
     for result in tavily_response["results"]:

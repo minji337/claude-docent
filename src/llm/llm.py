@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class LLM:
 
-    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt):
+    def __init__(self, model_name: str, system_prompt: str, tool_system_prompt: str):
         self.client = Anthropic()
         self.model = model_name
         self.system_prompt = system_prompt
@@ -36,7 +36,7 @@ class LLM:
             )
             return response.content[0].text
         except Exception as e:
-            logging.error(f"[create_response error] {e}")
+            logger.error(f"[create_response error] {e}")
             raise e
 
     def create_tool_response(
@@ -47,7 +47,7 @@ class LLM:
         max_tokens: int = 2048,
         tool_choice: dict[str, str] = {"type": "auto"},
         tool_system_prompt: str | None = None,
-        stop_sequences: list[str] = [],
+        stop_sequences: list[str] | None = None,
     ) -> Message:
 
         try:
@@ -70,7 +70,7 @@ class LLM:
             )
             return response
         except Exception as e:
-            logging.info(f"[LLM ERROR] {e}")
+            logger.error(f"[LLM ERROR] {e}")
             raise e
 
 
