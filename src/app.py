@@ -7,8 +7,6 @@ setup_logging()
 from utils import get_base64_data
 from llm import DocentBot
 
-setup_logging()
-
 logger = logging.getLogger(__name__)
 logger.info("도슨트 봇 시작 >>>>>")
 
@@ -254,7 +252,8 @@ def main_page(docent_bot: DocentBot) -> None:
                 lambda: docent_bot.answer(user_message)
             )
             with st.chat_message("assistant", avatar=avatar["assistant"]):
-                st.markdown(docent_answer)
+                # 마크다운 취소선 표현 방지
+                st.markdown(docent_answer.replace("~", "\\~")) 
                 if references:
                     expander = st.expander("📚 출처:")
                     for title, url in references:

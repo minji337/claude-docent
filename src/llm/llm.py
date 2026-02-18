@@ -88,8 +88,3 @@ claude_4_5 = LLM(
     tool_system_prompt=default_tool_system_prompt,
 )
 
-claude_3_5_haiku = LLM(
-    model_name="claude-4-5-haiku-20251021",
-    system_prompt=default_system_prompt,
-    tool_system_prompt=default_tool_system_prompt,
-)
