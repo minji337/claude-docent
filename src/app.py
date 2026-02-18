@@ -7,8 +7,6 @@ setup_logging()
 from utils import get_base64_data
 from llm import DocentBot
 
-setup_logging()
-
 logger = logging.getLogger(__name__)
 logger.info("도슨트 봇 시작 >>>>>")
 
