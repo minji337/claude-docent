@@ -25,12 +25,12 @@ class DocentBot:
         if is_next:
             try:
                 self.relics.next()
-            except IndexError as e:
+            except IndexError:
                 self._overflow()
         else:
             try:
                 self.relics.previous()
-            except ValueError as e:
+            except ValueError:
                 self._underflow()
 
         if not self.relics.is_presented():
