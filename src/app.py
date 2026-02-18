@@ -177,7 +177,9 @@ def _get_loop() -> asyncio.AbstractEventLoop:
 
 
 def run_async(coro) -> Future:
-    """concurrent.futures.Future 를 즉시 반환하므로 Streamlit 쪽에서는 동기 코드처럼 상태를 확인할 수 있다."""
+    """
+    concurrent.futures.Future 를 즉시 반환하므로 Streamlit 쪽에서는 동기 코드처럼 상태를 확인할 수 있다.
+    """
     loop = _get_loop()
     return asyncio.run_coroutine_threadsafe(coro, loop)
 
@@ -419,7 +421,8 @@ def main_page(docent_bot: DocentBot) -> None:
                 lambda: docent_bot.answer(user_message)
             )
             with st.chat_message("assistant", avatar=avatar["assistant"]):
-                st.markdown(docent_answer)
+                # 마크다운 취소선 표현 방지
+                st.markdown(docent_answer.replace("~", "\\~")) 
                 if references:
                     expander = st.expander("📚 출처:")
                     for title, url in references:
