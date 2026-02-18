@@ -14,7 +14,7 @@ client = Anthropic()
 
 class DocentBot:
 
-    def __init__(self, model_name="claude-sonnet-4-5-20250929"):
+    def __init__(self, model_name="claude-sonnet-4-6"):
         self.model = model_name
         self.messages = []
         self.relics = Relics()
