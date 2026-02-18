@@ -1,7 +1,8 @@
 ---
 name: security-auditor
 description: 코드베이스의 보안 취약점을 분석하고 개선안을 제시합니다.
-model: claude-sonnet-4-20250514
+tools: Glob, Grep, Read, Bash
+model: sonnet
 ---
 
 ## 역할
