@@ -5,7 +5,7 @@ from .prompt_templates import (
     guide_instruction,
     revisit_instruction,
 )
-from .llm import claude_4_5 as claude
+from .llm import claude_4_6 as claude
 from .tools import use_tools, ToolData
 
 logger = logging.getLogger(__name__)
