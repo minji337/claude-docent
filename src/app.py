@@ -1,6 +1,10 @@
 import streamlit as st
 import logging
-from utils import setup_logging, get_base64_data
+from utils import setup_logging
+
+setup_logging()
+
+from utils import get_base64_data
 from llm import DocentBot
 
 setup_logging()
