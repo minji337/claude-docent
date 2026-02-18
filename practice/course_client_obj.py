@@ -52,7 +52,7 @@ class CourseClient:
 
     async def call_tool(self, tool_name: str, tool_input: dict) -> str:
         tool = await self.session.call_tool(name=tool_name, arguments=tool_input)
-        return tool[0].text
+        return tool.structured_content['result']
 
     async def get_prompt(self, name: str, arguments: dict) -> str:
         template = await self.session.get_prompt(name=name, arguments=arguments)

@@ -2,8 +2,8 @@ import asyncio
 from fastmcp import Client
 from pprint import pprint
 
-client = Client("http://127.0.0.1:8000/mcp")
-#client = Client("practice/course_server.py")
+#client = Client("http://127.0.0.1:8000/mcp")
+client = Client("practice/course_server.py")
 
 
 async def call_mcp():
@@ -27,7 +27,7 @@ async def call_mcp():
             arguments={"course_name": "파이썬 데이터 분석 입문"},
         )
         print("\n[툴 호출 결과]:")
-        pprint(tool_call_result[0].model_dump())
+        pprint(tool_call_result.structured_content)  
 
         prompts_list = await client.list_prompts()
         print("\n[프롬프트 리스트]:")
@@ -39,6 +39,7 @@ async def call_mcp():
         )
         print("\n[프롬프트 호출 결과]:")
         pprint(prompt_result.model_dump())
+        
 
 
 asyncio.run(call_mcp())

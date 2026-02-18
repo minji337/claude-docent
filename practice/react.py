@@ -83,7 +83,7 @@ sytstem_pronmpt = """
 
 def request_tool_call(messages: list):
     response = client.messages.create(  
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         temperature=0,
         tools=tools,
@@ -100,13 +100,13 @@ tool_repository = {
     "get_product_price": lambda product: get_product_price(product),
 }
 
-user_query = """
-내일 친구들과 정기 모임을 해야 해. 총 10명인데 예산 범위 내에서 어디가면 좋을까?
-""".strip()
-
 # user_query = """
-# 이번 여름에 해외여행을 가는 게 좋을까, 전세로 이사하는 게 좋을까?
+# 내일 친구들과 정기 모임을 해야 해. 총 10명인데 예산 범위 내에서 어디가면 좋을까?
 # """.strip()
+
+user_query = """
+이번 여름에 해외여행을 가는 게 좋을까, 전세로 이사하는 게 좋을까?
+""".strip()
 
 messages = [{"role": "user", "content": user_query}]                
 

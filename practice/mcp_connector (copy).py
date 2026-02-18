@@ -14,11 +14,7 @@ response = client.beta.messages.create(
         "url": "https://ef88bdc6-28f5-4f62-a437-3683a8a74f9c-00-tazcg59o1l4a.sisko.replit.dev/mcp",
         "name": "ItCourseServer",
     }],
-    tools=[{
-        "type": "mcp_toolset",
-        "mcp_server_name": "ItCourseServer",
-    }],
-    betas=["mcp-client-2025-11-20"]
+    betas=["mcp-client-2025-04-04"]
 )
 
 from pprint import pprint

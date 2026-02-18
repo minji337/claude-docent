@@ -6,17 +6,17 @@ from anthropic import Anthropic
 
 
 @st.cache_resource
-def _get_loop():
+def _get_loop() -> asyncio.AbstractEventLoop:
     loop = asyncio.new_event_loop()
-    th = threading.Thread(target=loop.run_forever, daemon=True)
-    th.start()
+    t = threading.Thread(target=loop.run_forever, daemon=True)
+    t.start()
     return loop
 
 
 def run_async(coro):
     loop = _get_loop()
     future = asyncio.run_coroutine_threadsafe(coro, loop)
-    return future.result()
+    return future.result() # 결과 완료 시까지 대기
 
 
 @st.cache_resource
@@ -38,7 +38,7 @@ def call_llm(messages: list):
         max_tokens=1024,
         temperature=0.0,
         messages=messages,
-        model="claude-3-5-haiku-20241022",
+        model="claude-haiku-4-5",
         tools=st.session_state.tools,
     )
 

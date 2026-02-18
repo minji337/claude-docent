@@ -59,9 +59,9 @@ def get_course_prompt_template(
 
 if __name__ == "__main__":
     try:
-        logger.info("Starting MCP server..............")
-        asyncio.run(mcp.run(transport="streamable-http"))
+        logger.info("Starting MCP server..............")        
         #asyncio.run(mcp.run(transport="stdio"))
-        #asyncio.run(mcp.run(transport="streamable-http", host="0.0.0.0", port=8000))
+        #asyncio.run(mcp.run(transport="streamable-http"))
+        asyncio.run(mcp.run(transport="streamable-http", host="0.0.0.0", port=8000))
     except Exception as e:
         logger.error(f"Server error: {str(e)}", exc_info=True)
