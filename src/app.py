@@ -1,6 +1,10 @@
 import streamlit as st
 import logging
-from utils import setup_logging, get_base64_data, email_to_6digit_hash
+from utils import setup_logging
+
+setup_logging()
+
+from utils import get_base64_data, email_to_6digit_hash
 from llm import DocentBot
 import datetime
 import asyncio
@@ -197,7 +201,6 @@ def get_reservation_agent() -> tuple[ReservationAgent, Future]:
 def start_scheduler(_agent: ReservationAgent):
     scheduler = AsyncIOScheduler()
 
-    # 매일 저녁 19시 30분(KST)에 만료된 예약 체크
     kst = ZoneInfo("Asia/Seoul")
     scheduler.add_job(
         _agent.check_expired_reservations,

@@ -6,7 +6,7 @@ from .prompt_templates import (
     revisit_instruction,
     museum_info_prompt,
 )
-from .llm import claude_4_5 as claude
+from .llm import claude_4_6 as claude
 from .tools import use_tools, ToolData
 from typing import Any
 

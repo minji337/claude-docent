@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import numpy as np
 import os
 from openai import OpenAI
-from .llm import claude_4_5 as claude
+from .llm import claude_4_6 as claude
 from .prompt_templates import search_result_filter
 import json
 from utils.utils import project_root
@@ -143,10 +143,11 @@ def filter_results(similarities: list[Similarity], query: str) -> list[Similarit
                     user_query=query, search_results=search_doc_results
                 ),
             },
-            {"role": "assistant", "content": "<json>"},
         ],
+        temperature=0,
         stop_sequences=["</json>"],
     )
+    response_json_str = response_json_str.replace("<json>", "")
     filtered_similarities: list[Similarity] = []
     search_sim_results = {sim.id: sim for sim in similarities}
     response_json: dict[str, bool] = json.loads(response_json_str)
