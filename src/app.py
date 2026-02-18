@@ -197,7 +197,6 @@ def get_reservation_agent() -> tuple[ReservationAgent, Future]:
 def start_scheduler(_agent: ReservationAgent):
     scheduler = AsyncIOScheduler()
 
-    # 매일 저녁 19시 30분(KST)에 만료된 예약 체크
     kst = ZoneInfo("Asia/Seoul")
     scheduler.add_job(
         _agent.check_expired_reservations,

@@ -169,7 +169,7 @@ class Agent:
                 else:
                     return {
                         "role": "assistant",
-                        "content": "작업이 완료되었습니다.",
+                        "content": "요청이 정상적으로 완료되지 않았습니다. 잠시 후 다시 시도하세요.",
                     }
 
         except Exception as e:
