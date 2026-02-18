@@ -1,6 +1,11 @@
 import streamlit as st
 import logging
-from utils import setup_logging, get_base64_data, email_to_6digit_hash
+from utils import setup_logging
+
+setup_logging()
+
+from utils import get_base64_data, email_to_6digit_hash
+
 from llm import DocentBot, claude
 import datetime
 import asyncio

@@ -1,6 +1,6 @@
 from typing import Literal, Optional, Dict, TypedDict
 from pydantic import BaseModel, Field
-from .llm import claude_4_5 as claude
+from .llm import claude_4_6 as claude
 import logging
 from tavily import TavilyClient
 from .prompt_templates import history_based_prompt
