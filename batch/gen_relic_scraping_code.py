@@ -146,9 +146,8 @@ prompt = f"""
 
 <RESPONSE_FORMAT>
     ```python
-        ...여기에 코드 작성...
+        ...여기에 코드만 작성...
     ```
-    </python>
 </RESPONSE_FORMAT>
 """
 print(prompt)
@@ -158,14 +157,12 @@ import anthropic
 client = anthropic.Anthropic()
 
 response = client.messages.create(
-model="claude-sonnet-4-20250514",
+model="claude-sonnet-4-6",
     max_tokens=3072,
     temperature=0,
     messages=[
-        {"role": "user", "content": prompt},
-        {"role": "assistant", "content": "<python>"},
-    ], 
-    stop_sequences=["</python>"],
+        {"role": "user", "content": prompt}
+    ]
 )
 
 print(response.content[0].text.replace("```python", "").replace("```", "").strip())

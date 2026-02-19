@@ -53,11 +53,10 @@ beautifulsoup 파서를 통해 웹 사이트 링크 정보를 수집하려고 �
 5. 수집된 결과는 data 폴더 밑에 relic_links.json 파일로 저장합니다.
 </instructions>
 
-<response_format>
+<response_format>    
     ```python
-        ...여기에 코드 작성...
+        ...여기에 코드만 작성...
     ```
-    </python>
 </response_format>
 """.strip()
 
@@ -68,14 +67,12 @@ import anthropic
 client = anthropic.Anthropic()
 
 response = client.messages.create(
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-6",
     max_tokens=2048,
     temperature=0,
     messages=[
-        {"role": "user", "content": prompt},
-        {"role": "assistant", "content": "<python>"},
-    ], 
-    stop_sequences=["</python>"],
+        {"role": "user", "content": prompt}
+    ]
 )
 
 print(response.content[0].text.replace("```python", "").replace("```", "").strip())

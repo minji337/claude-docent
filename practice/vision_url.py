@@ -19,7 +19,7 @@ url = "https://upload.wikimedia.org/wikipedia/commons/a/a7/Camponotus_flavomargi
 
 client = anthropic.Anthropic()
 response = client.messages.create(
-    model="claude-sonnet-4-5-20250929",
+    model="claude-sonnet-4-6",
     max_tokens=1024,
     messages=[
         {

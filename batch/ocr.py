@@ -36,7 +36,7 @@ def get_base64_data(file_path):
 
 client = anthropic.Anthropic()
 response = client.messages.create(
-    model="claude-sonnet-4-5-20250929",
+    model="claude-sonnet-4-6",
     max_tokens=2048,
     temperature=0,
     messages=[
@@ -56,17 +56,11 @@ response = client.messages.create(
                     "text": prompt
                 }
             ],
-        },
-        {
-            "role": "assistant",
-            "content": "<json>"
         }
     ],
     stop_sequences=["</json>"],
 )
-print(response.content[0].text)
-
-json_data = response.content[0].text
-
+json_str = response.content[0].text.replace("<json>", "").strip()
+print(json_str)
 with open(json_file, 'w', encoding='utf-8') as f:
-    f.write(json_data)
+    f.write(json_str)
