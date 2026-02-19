@@ -5,7 +5,7 @@ client = anthropic.Anthropic()
 top_p=0.1
 for i in range(3):
     response = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         top_p=top_p,
         messages=[{"role": "user", "content": "당신을 두 문장으로 소개하세요."}]
@@ -17,7 +17,7 @@ print()
 top_k=1
 for i in range(3):
     response = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         top_k=top_k,
         messages=[{"role": "user", "content": "당신을 두 문장으로 소개하세요."}]

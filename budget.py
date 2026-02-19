@@ -3,7 +3,7 @@ import anthropic
 client = anthropic.Anthropic()
 
 response = client.messages.create(
-    model="claude-sonnet-4-5-20250929",
+    model="claude-sonnet-4-6",
     max_tokens=4000,
     thinking= {
         "type": "enabled",
@@ -11,8 +11,8 @@ response = client.messages.create(
     },
     messages=[{
         "role": "user",
-        "content": "1부터 20까지의 자연수 중에서 3의 배수이면서 동시에 4의 배수인 수들의 합은 얼마일까?"
-        #"content": "1 더하기 1은?"
+        #"content": "1부터 20까지의 자연수 중에서 3의 배수이면서 동시에 4의 배수인 수들의 합은 얼마일까?"
+        "content": "1 더하기 1은?"
     }]
 )
 
