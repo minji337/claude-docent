@@ -17,7 +17,7 @@ system_prompt2 = """
 system_prompts = [system_prompt1, system_prompt2]
 for i, system_prompt in enumerate(system_prompts, 1):
     response = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         system=system_prompt,
         messages=[

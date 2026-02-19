@@ -18,7 +18,7 @@ prompt = """
 """
 
 response = client.messages.create(
-    model="claude-3-7-sonnet-20250219",
+    model="claude-haiku-4-5",
     max_tokens=2000,
     messages=[
         {"role": "user", 'content': prompt},
