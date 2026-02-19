@@ -25,7 +25,7 @@ def get_weather(location: str, unit: Literal["섭씨", "화씨"]) -> str:
 client = Anthropic()
 
 # response = client.messages.create(
-#     model="claude-sonnet-4-5-20250929",
+#     model="claude-sonnet-4-6",
 #     max_tokens=1024,
 #     tools=[get_weather.to_dict()], # to_dict()로 JSON 스키마를 자동 생성하여 tools에 전달
 #     tool_choice={"type": "auto"},
@@ -37,7 +37,7 @@ client = Anthropic()
 # print("사용할 도구:", response.content[0])
 
 tool_runner = client.beta.messages.tool_runner(
-    model="claude-sonnet-4-5-20250929",
+    model="claude-sonnet-4-6",
     max_tokens=512,
     tools=[get_weather],
     messages=[{"role": "user", "content": "서울 날씨는 어때?"}],

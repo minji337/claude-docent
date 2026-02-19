@@ -51,7 +51,7 @@ user_messsage = """
 client = anthropic.Anthropic()
 
 response = client.messages.create(  
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-6",
     max_tokens=1024,
     tools=tools,      
     tool_choice = {"type": "tool", "name": "Applicants"},

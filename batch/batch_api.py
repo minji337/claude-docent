@@ -72,7 +72,7 @@ for relic_id, relic_info in relic_index_json.items():
         Request(
             custom_id=relic_id,
             params=MessageCreateParamsNonStreaming(
-                model="claude-sonnet-4-5-20250929",
+                model="claude-sonnet-4-6",
                 max_tokens=1024,
                 temperature=0.3,
                 tools=tools,

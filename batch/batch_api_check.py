@@ -66,7 +66,7 @@ for relic_id, relic_info in relic_index_json.items():
         / Path(relic_info["img"]).name
     )
     message = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         temperature=0.3,
         tools=tools,

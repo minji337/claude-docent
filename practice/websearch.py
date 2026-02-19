@@ -4,12 +4,12 @@ client = anthropic.Anthropic()
 messages = [
     {
         "role": "user",
-        "content": "한국 증시 기사를 조사한 뒤 100자 이내로 요약해."
+        "content": "국립중앙박물관에서 가장 인기 있는 전시물 알려줘."
     }
 ]
 
 response = client.messages.create(
-    model="claude-sonnet-4-5-20250929",
+    model="claude-sonnet-4-6",
     max_tokens=1024,
     messages=messages,
     tools=[{
@@ -28,7 +28,8 @@ response = client.messages.create(
     }]
 )
 
-print(response)
+import json
+print(json.dumps(response.model_dump(), indent=2, ensure_ascii=False))
 
 def get_citations_from_response(response):
     message = ""
