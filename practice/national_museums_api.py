@@ -1,23 +1,16 @@
 import argparse
 from anthropic import Anthropic
 from pathlib import Path
-from dotenv import load_dotenv
 from anthropic.lib import files_from_dir
 
 # 프로젝트 루트 디렉토리
 PROJECT_ROOT = Path(__file__).cwd()
 print(f"프로젝트 루트: {PROJECT_ROOT}")
 
-# .env 파일 로드 (명시적 경로 지정)
-env_path = PROJECT_ROOT / ".env"
-load_dotenv(dotenv_path=str(env_path), override=True)
-
 ## 스킬 디렉토리 경로
 SKILL_DIR = PROJECT_ROOT / ".claude" / "skills" / "national-museums"
 
-
 client = Anthropic()
-
 
 def upload_skill(display_title: str) -> str:
     skill = client.beta.skills.create(
@@ -48,8 +41,8 @@ def update_skill(skill_id: str) -> str:
 
     return new_version.version
 
-
-def delete_skill(skill_id: str) -> bool:
+    
+def delete_skill(skill_id: str):
     """스킬 삭제 (모든 버전 삭제 후 스킬 삭제)"""
     print(f"스킬 삭제 중: {skill_id}")
 
@@ -65,7 +58,7 @@ def delete_skill(skill_id: str) -> bool:
     for version in versions.data:
         print(f"    버전 삭제: {version.version}")
         client.beta.skills.versions.delete(
-            skill_id=skill_id, version=version.version, betas=["skills-2025-10-02"]
+            skill_id=skill_id, version=version.version
         )
 
     # Step 2: 스킬 삭제
@@ -175,7 +168,7 @@ def ask_museum_multi_turn(skill_id: str, questions: list[str]) -> str:
         messages.append({"role": "user", "content": question})
 
         response = client.beta.messages.create(
-            model="claude-sonnet-4-5-20250929",
+            model="claude-sonnet-4-6",
             max_tokens=4096,
             betas=["code-execution-2025-08-25", "skills-2025-10-02"],
             container={
@@ -208,7 +201,7 @@ def ask_museum_long_running(skill_id: str, question: str, max_retries: int = 10)
     messages = [{"role": "user", "content": question}]
 
     response = client.beta.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=4096,
         betas=["code-execution-2025-08-25", "skills-2025-10-02"],
         container={
@@ -230,7 +223,7 @@ def ask_museum_long_running(skill_id: str, question: str, max_retries: int = 10)
         messages.append({"role": "assistant", "content": response.content})
 
         response = client.beta.messages.create(
-            model="claude-sonnet-4-5-20250929",
+            model="claude-sonnet-4-6",
             max_tokens=4096,
             betas=["code-execution-2025-08-25", "skills-2025-10-02"],
             container={
@@ -311,33 +304,6 @@ def main():
             return
         delete_skill(skill_id)
         return
-
-    # # 질문 처리
-    # if not args.question:
-    #     print('사용법: python national_museums_api.py "질문"')
-    #     print('예시: python national_museums_api.py "국립경주박물관 관람시간은?"')
-    #     return
-
-    # # 스킬 ID 결정
-    # skill_id = args.skill_id
-    # if not skill_id:
-    #     # 기존 스킬 찾기
-    #     print("기존 스킬 검색 중...")
-    #     skill_id = find_existing_skill("지역 국립박물관 안내")
-
-    #     if skill_id:
-    #         print(f"기존 스킬 발견: {skill_id}")
-    #     else:
-    #         print("기존 스킬이 없습니다. 새로 업로드합니다...")
-    #         skill_id = upload_skill()
-
-    # # 질문하기
-    # answer = ask_museum(skill_id, args.question)
-
-    # print("\n" + "=" * 60)
-    # print("응답:")
-    # print("=" * 60)
-    # print(answer)
 
     if args.simple:
         question = args.question or "공주박물관의 대표 유물은 무엇인가요?"
