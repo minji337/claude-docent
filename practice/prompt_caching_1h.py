@@ -7,11 +7,7 @@ llm_definition ="""
 
 import anthropic
 
-client = anthropic.Anthropic(
-    # default_headers={
-    #     "anthropic-beta": "extended-cache-ttl-2025-04-11"
-    # },
-)
+client = anthropic.Anthropic()
 
 
 system_prompt=[
@@ -44,7 +40,7 @@ messages = []
 for num, user_message in enumerate(user_messages, start=1):
     messages.append(user_message)
     response = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         temperature=0,   
         system=system_prompt,    

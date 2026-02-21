@@ -3116,7 +3116,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp", specifier = "==3.13.3" },
-    { name = "anthropic", specifier = "==0.80.0" },
+    { name = "anthropic", specifier = ">=0.80.0" },
     { name = "apscheduler", specifier = "==3.11.2" },
     { name = "black", specifier = "==26.1.0" },
     { name = "bs4", specifier = "==0.0.2" },

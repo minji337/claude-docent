@@ -23,7 +23,7 @@ def get_base64_data(file_path):
 system_prompt=[
     {
         "type": "text",
-        "text": "2.주어진 내용을 바탕으로 세 문장 이내로 간략히 답변하세요.", 
+        "text": "1.주어진 내용을 바탕으로 세 문장 이내로 간략히 답변하세요.", 
     },
     {
         "type": "text",
@@ -62,14 +62,14 @@ client = anthropic.Anthropic()
 
 messages = []
 for num, user_message in enumerate(user_messages, start=1):
-    messages.append(user_message)
+    messages.append(user_message)    
     response = client.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=1024,
         temperature=0,   
         system=system_prompt,    
         messages=messages        
-    )
+    )    
     messages.append({"role": "assistant", "content": response.content[0].text})
     print(f"\n{num}번째 대화입니다.{"-"*100}")
     print(response.usage.model_dump_json())

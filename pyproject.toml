@@ -5,7 +5,7 @@ description = "docent bot"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "anthropic==0.80.0",
+    "anthropic>=0.80.0",
     "black==26.1.0",
     "bs4==0.0.2",
     "dill==0.4.0",
