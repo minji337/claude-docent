@@ -6,15 +6,19 @@ import json
 from pydantic import Field
 from typing import Literal
 
+BASE_DIR = Path(__file__).resolve().parent
+LOG_PATH = BASE_DIR / "course_server.log"
+
 # 로그 파일 설정
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
-        logging.FileHandler("course_server.log", encoding="utf-8"),
-        logging.StreamHandler(),  # 콘솔 출력도 유지
+        logging.FileHandler(LOG_PATH, encoding="utf-8"),
+        logging.StreamHandler(),
     ],
 )
+
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP(name="ItCourseServer")
@@ -50,10 +54,10 @@ def check_available_seats(course_name: str = Field(description="강좌 이름"))
 
 @mcp.prompt(
     name="강의 추천 프롬프트 템플릿",
-    description="직업과 관심사를 기반으로 강의 추천을 위한 프롬프트를 생성합니다.",
+    description="직업과 관심사를 기반으로 강의 추s천을 위한 프롬프트를 생성합니다.",
 )
 def get_course_prompt_template(
-    job: Literal["학생", "직장인", "주부", "기타"], interest: str
+    job: str, interest: str
 ) -> str:
     return f"현재 직업은 {job}에요. {interest}에 대해 관심이 많아요. 강의 추천해주세요."
 
@@ -61,8 +65,6 @@ def get_course_prompt_template(
 if __name__ == "__main__":
     try:
         logger.info("Starting MCP server..............")
-        # asyncio.run(mcp.run(transport="streamable-http"))
-        asyncio.run(mcp.run(transport="stdio"))
-        # asyncio.run(mcp.run(transport="streamable-http", host="0.0.0.0", port=8000))
+        asyncio.run(mcp.run(transport="stdio"))       
     except Exception as e:
         logger.error(f"Server error: {str(e)}", exc_info=True)
