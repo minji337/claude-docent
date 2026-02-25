@@ -167,7 +167,13 @@ def main():
                 key="resource_text_area",
             )
 
-            st.button("확인", on_click=on_resource_confirm, args=(rtext,))
+            st.button(
+                "확인", 
+                key="btn_resource_confirm",
+                on_click=on_resource_confirm, 
+                args=(rtext,)
+            )
+
 
     with col2:
         prompt_names = list(course_client.prompt_map.keys())

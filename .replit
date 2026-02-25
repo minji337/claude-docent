@@ -16,20 +16,20 @@ run = ["python3", "main.py"]
 deploymentTarget = "cloudrun"
 
 # MCP 커넥터용 포트
-[[ports]]
-localPort = 8000
-externalPort = 80
-
-# 내부 streamable-http용 포트
 # [[ports]]
 # localPort = 8000
-# externalPort = 3000
-# exposeLocalhost = true
+# externalPort = 80
+
+# 내부 streamable-http용 포트
+[[ports]]
+localPort = 8000
+externalPort = 3000
+exposeLocalhost = true
 
 # streamlit용 포트
-# [[ports]]
-# localPort = 8501
-# externalPort = 80
+[[ports]]
+localPort = 8501
+externalPort = 80
 
 [agent]
 expertMode = true
