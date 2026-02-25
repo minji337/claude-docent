@@ -21,7 +21,7 @@ def show_image(img: Image.Image):
             str(pathlib.Path(tmp.name).resolve())
         )
         webbrowser.open_new_tab(file_url)
-        
+
 def get_base64_data(file_path):
     img = Image.open(file_path)
     width, height = img.size
