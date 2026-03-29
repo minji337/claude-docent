@@ -12,6 +12,7 @@ SKILL_DIR = PROJECT_ROOT / ".claude" / "skills" / "national-museums"
 
 client = Anthropic()
 
+
 def upload_skill(display_title: str) -> str:
     skill = client.beta.skills.create(
         display_title=display_title,
@@ -41,7 +42,7 @@ def update_skill(skill_id: str) -> str:
 
     return new_version.version
 
-    
+
 def delete_skill(skill_id: str):
     """스킬 삭제 (모든 버전 삭제 후 스킬 삭제)"""
     print(f"스킬 삭제 중: {skill_id}")
@@ -57,9 +58,7 @@ def delete_skill(skill_id: str):
 
     for version in versions.data:
         print(f"    버전 삭제: {version.version}")
-        client.beta.skills.versions.delete(
-            skill_id=skill_id, version=version.version
-        )
+        client.beta.skills.versions.delete(skill_id=skill_id, version=version.version)
 
     # Step 2: 스킬 삭제
     print("  스킬 삭제 중...")
@@ -67,8 +66,8 @@ def delete_skill(skill_id: str):
 
     print(f"스킬 삭제 완료: {skill_id}")
 
-def list_skills():
 
+def list_skills():
     skills = client.beta.skills.list(source="anthropic", betas=["skills-2025-10-02"])
 
     print("\n=== 사전구축 스킬 목록 ===")
@@ -94,18 +93,17 @@ def find_existing_skill(display_title: str) -> str | None:
 
     for skill in skills.data:
         if skill.display_title == display_title:
-            return skill.id
+            return skill.idclaude - sonnet - 4 - 6
     return None
 
 
 def ask_museum_simple(skill_id: str, question: str) -> str:
-
     print(f"[기본 실행] 질문: {question}, {skill_id}")
 
     messages = [{"role": "user", "content": question}]
 
     response = client.beta.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=4096,
         betas=["code-execution-2025-08-25", "skills-2025-10-02"],
         container={
@@ -137,7 +135,7 @@ def ask_museum_multi_turn(skill_id: str, questions: list[str]) -> str:
     messages = [{"role": "user", "content": questions[0]}]
 
     response = client.beta.messages.create(
-        model="claude-sonnet-4-5-20250929",
+        model="claude-sonnet-4-6",
         max_tokens=4096,
         betas=["code-execution-2025-08-25", "skills-2025-10-02"],
         container={
@@ -319,8 +317,7 @@ def main():
     if args.long_running:
         question = (
             # args.question or "전국 13개 국립박물관의 운영 정보를 모두 정리해주세요."
-            args.question
-            or "공주와 제주 국립박물관의 운영 정보를 모두 정리해주세요."
+            args.question or "공주와 제주 국립박물관의 운영 정보를 모두 정리해주세요."
         )
         ask_museum_long_running(skill_id, question)
         return
