@@ -58,8 +58,8 @@ config = {
             "args": [str(mcp_slack_path)],
             "transport": "stdio",
             "env": {
-                  "SLACK_BOT_TOKEN": os.getenv("SLACK_BOT_TOKEN"),
-              },
+                "SLACK_BOT_TOKEN": os.getenv("SLACK_BOT_TOKEN"),
+            },
         },
         "weather": {"url": weather_url, "transport": "streamable-http"},
     }
@@ -120,7 +120,6 @@ local_tool_repository = {
 
 
 class Agent:
-
     def __init__(
         self, system_prompt: str, tools: list[dict], session: Client[MCPConfigTransport]
     ):
@@ -134,7 +133,9 @@ class Agent:
             temperature=0.0,
             max_tokens=2048,
             tools=self.tools,
-            tool_system_prompt=self.system_prompt.replace("$today", datetime.now(KST).strftime("%Y-%m-%d"))
+            tool_system_prompt=self.system_prompt.replace(
+                "$today", datetime.now(KST).strftime("%Y-%m-%d")
+            ),
         )
         logger.info(f"\n\n<<ReAct message>>\n{response.content[0].text}\n\n")
         return response
@@ -180,7 +181,7 @@ class Agent:
                 # logger.info(f"do_work response...{response}")
                 if response.stop_reason == "end_turn":
                     break
-                if tries > 10:
+                if tries >= 10:
                     raise ValueError("Too many tries")
                 tries += 1
 
@@ -191,7 +192,6 @@ class Agent:
 
 
 class ReservationAgent:
-
     def __init__(self):
         self.exit_stack = AsyncExitStack()
         self.tools: list[dict] = []
@@ -250,17 +250,17 @@ class ReservationAgent:
         self.notice_agent = Agent(
             system_prompt=notice_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session
+            session=self.session,
         )
         self.reply_agent = Agent(
             system_prompt=reply_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session
+            session=self.session,
         )
         self.expiry_check_agent = Agent(
             system_prompt=expiry_check_system_prompt.format(react_prompt=react_prompt),
             tools=self.tools,
-            session=self.session
+            session=self.session,
         )
 
     async def make_reservation(self, application: dict) -> None:
