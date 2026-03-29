@@ -146,7 +146,7 @@ def on_progress(func) -> str | None:
             result = func()
         except Exception as e:
             st.error(f"도슨트 챗봇에서 오류가 발생했습니다: {e}")
-            return "", "오류가 발생했네요. 죄송하지만 잠시 후 다시 시도해주세요."
+            return "오류가 발생했네요. 죄송하지만 잠시 후 다시 시도해주세요."
 
     overlay_placeholder.empty()
     return result
@@ -188,11 +188,9 @@ def init_page() -> None:
 
 
 def main_page(docent_bot: DocentBot) -> None:
-
     def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
-
             header, img_path, title = (
                 st.session_state.relic_card["header"],
                 st.session_state.relic_card["img_path"],
@@ -236,7 +234,7 @@ def main_page(docent_bot: DocentBot) -> None:
                 """,
                 unsafe_allow_html=True,
             )
-    
+
             st.markdown("---")
             st.markdown(how_to_use)
 
@@ -248,9 +246,7 @@ def main_page(docent_bot: DocentBot) -> None:
         if user_message:
             with st.chat_message("user", avatar=avatar["user"]):
                 st.markdown(user_message)
-            docent_answer = on_progress(
-                lambda: docent_bot.answer(user_message)
-            )
+            docent_answer = on_progress(lambda: docent_bot.answer(user_message))
             with st.chat_message("assistant", avatar=avatar["assistant"]):
                 st.markdown(docent_answer)
 
