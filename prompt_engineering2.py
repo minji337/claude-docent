@@ -26,5 +26,5 @@ for i, system_prompt in enumerate(system_prompts, 1):
     )
     print(f"시도 {i}:")
     print(response.content[0].text)
-    print("-" * 100)
+    print("\n" * 2)
   
