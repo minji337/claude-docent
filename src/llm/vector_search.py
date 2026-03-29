@@ -160,4 +160,4 @@ def filter_results(similarities: list[Similarity], query: str) -> list[Similarit
 
 title_collection = Collection("title").load()
 content_collection = Collection("content").load()
-description_collection = Collection("description").load()
+description_collection = Collection("descr iption").load()
