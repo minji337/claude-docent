@@ -18,8 +18,6 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from zoneinfo import ZoneInfo
 
-setup_logging()
-
 logger = logging.getLogger(__name__)
 logger.info("도슨트 봇 시작 >>>>>")
 
@@ -259,11 +257,9 @@ def init_page() -> None:
 
 
 def main_page(docent_bot: DocentBot) -> None:
-
     def side_bar() -> None:
         # 사이드바 설정
         with st.sidebar:
-
             header, img_path, title = (
                 st.session_state.relic_card["header"],
                 st.session_state.relic_card["img_path"],
@@ -327,7 +323,9 @@ def main_page(docent_bot: DocentBot) -> None:
                 )
 
                 kst = ZoneInfo("Asia/Seoul")
-                tomorrow = (datetime.datetime.now(kst) + datetime.timedelta(days=1)).date()
+                tomorrow = (
+                    datetime.datetime.now(kst) + datetime.timedelta(days=1)
+                ).date()
                 weekday_map = ["월", "화", "수", "목", "금"]
                 weekdays = []
                 d = tomorrow
@@ -382,7 +380,7 @@ def main_page(docent_bot: DocentBot) -> None:
                         "visitors": visitors,
                         "applicant_email": applicant_email,
                         "applicant_number": email_to_6digit_hash(applicant_email),
-                        "application_time": datetime.datetime.now().strftime(
+                        "application_time": datetime.datetime.now(kst).strftime(
                             "%Y.%m.%d %H:%M:%S.%f"
                         ),
                     }
@@ -422,7 +420,7 @@ def main_page(docent_bot: DocentBot) -> None:
             )
             with st.chat_message("assistant", avatar=avatar["assistant"]):
                 # 마크다운 취소선 표현 방지
-                st.markdown(docent_answer.replace("~", "\\~")) 
+                st.markdown(docent_answer.replace("~", "\\~"))
                 if references:
                     expander = st.expander("📚 출처:")
                     for title, url in references:
