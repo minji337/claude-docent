@@ -98,9 +98,6 @@ def find_existing_skill(display_title: str) -> str | None:
     return None
 
 
-    return True
-
-
 def ask_museum_simple(skill_id: str, question: str) -> str:
 
     print(f"[기본 실행] 질문: {question}, {skill_id}")

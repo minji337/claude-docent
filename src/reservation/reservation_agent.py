@@ -77,6 +77,7 @@ application_template = """
 app = AsyncApp(token=os.getenv("SLACK_BOT_TOKEN"))
 KST = ZoneInfo("Asia/Seoul")
 
+
 class SuccessMail(BaseModel):
     application_form: str = Field(description="슬랙에 공지했던 형식과 내용")
     applicant_email: str
@@ -125,27 +126,25 @@ async def retrieve_email_address_tool(args: dict):
 
 
 class Agent:
-
     def __init__(
         self,
         system_prompt: str,
         mcp_servers: dict,
         allowed_tools: list[str],
     ):
+        self.system_prompt: str = repr(system_prompt)
         self.mcp_servers: dict = mcp_servers
         self.allowed_tools: list[str] = allowed_tools
         self.options = ClaudeAgentOptions(
-            system_prompt=repr(system_prompt),
             mcp_servers=self.mcp_servers,
             allowed_tools=self.allowed_tools,
             permission_mode="bypassPermissions",
-            model="sonnet"
+            model="sonnet",
         )
 
     async def do_work(self, messages: list[dict]) -> dict:
-
         try:
-            self.options.system_prompt = self.options.system_prompt.replace(
+            self.options.system_prompt = self.system_prompt.replace(
                 "$today", datetime.now(KST).strftime("%Y-%m-%d")
             )
 
@@ -179,7 +178,6 @@ class Agent:
 
 
 class ReservationAgent:
-
     def __init__(self):
         self.socket_handler = None
         self.socket_task: asyncio.Task | None = None
@@ -238,17 +236,17 @@ class ReservationAgent:
         self.notice_agent = Agent(
             system_prompt=notice_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools
+            allowed_tools=allowed_tools,
         )
         self.reply_agent = Agent(
             system_prompt=reply_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools
+            allowed_tools=allowed_tools,
         )
         self.expiry_check_agent = Agent(
             system_prompt=expiry_check_system_prompt.format(react_prompt=react_prompt),
             mcp_servers=self.mcp_servers,
-            allowed_tools=allowed_tools
+            allowed_tools=allowed_tools,
         )
 
     async def make_reservation(self, application: dict) -> None:
