@@ -193,8 +193,8 @@ class DocentBot:
                 self.messages.append({"role": "assistant", "content": response_message})
             case _:
                 response_message = claude.create_response_text(messages=self.messages)
-                self.messages.append({"role": "assistant", "content": response_message})                
-        
+                self.messages.append({"role": "assistant", "content": response_message})     
+                
         return references, response_message
 
     @property
