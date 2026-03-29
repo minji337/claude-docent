@@ -21,7 +21,6 @@ class ExceptionHandler:
                 "content": "준비한 전시물을 모두 소개했습니다. 오늘 유익한 시간 되었기를 바랍니다. 감사합니다.",
             }
         )
-        return relics
     
     @staticmethod
     def underflow(messages: list) -> None:
@@ -31,8 +30,6 @@ class ExceptionHandler:
 
 class InstructionHandler:
 
-    first_present_index = 1
-    
     def __init__(self):
         self.last_guide_id = ""
     
