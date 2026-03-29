@@ -20,5 +20,5 @@ for i, user_msg in enumerate(user_messages):
     )
     print(f"Turn {i+1}:")
     print(response.content[0].text)
-    print("-" * 100)
+    print("\n" * 2)
     messages.append({"role": "assistant", "content": response.content[0].text})
