@@ -87,36 +87,23 @@ def request_tool_call(messages: list):
 messages = [
     {
         "role": "user",
-        "content": "서울 날씨는 어때?"
+        "content": "서울은 지금 몇 시이고, 날씨는 어때?" # 오류 발생하는 질문
     }
 ]
 
 response = request_tool_call(messages)
-pprint(response.model_dump())
-
-print("*"*100)
-
-# if response.stop_reason == "tool_use":
-#     tool_content = next(content for content in response.content if content.type == "tool_use")
-#     func_name, args = tool_content.name, tool_content.input
-#     if func_name == "get_weather":
-#         tool_result = get_weather(args["location"], args["unit"])
-#     elif func_name == "get_time":
-#         tool_result = get_time(args["timezone"])
-#     print(tool_result)
 
 tool_repository = {
     "get_weather": lambda location, unit: get_weather(location, unit),
     "get_time": lambda timezone: get_time(timezone),
-    # 신규함수는 여기에만 추가
 }
 
 if response.stop_reason == "tool_use":
     tool_content = next(content for content in response.content if content.type == "tool_use")
     func_name, args = tool_content.name, tool_content.input
     tool_result = tool_repository[func_name](**args)    
-    print(tool_result)
-print("*"*100)
+print("tool_result:")
+pprint(tool_result)
 
 messages.append({"role": "assistant", "content": response.content})
 messages.append(
@@ -132,28 +119,5 @@ messages.append(
     }
 )
 response = request_tool_call(messages)
-print(response.content[0].text)
-print("*"*100)
-
-# messages = [
-# {
-#         "role": "assistant",
-#         "content": [tool_content]
-#     },
-#     {
-#         "role": "user",
-#         "content": [
-#             {
-#                 "type": "tool_result",
-#                 "tool_use_id": tool_content.id,
-#                 "content": json.dumps(tool_result),
-#             }
-#         ],
-#     }
-# ]
-
-
-# response = request_tool_call(messages)
-# print(response.content[0].text)
-
-
+print("\nresponse:")
+pprint(response.model_dump())

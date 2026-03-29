@@ -41,6 +41,8 @@ class ExceptionHandler:
 
 class InstructionHandler:
 
+    first_present_index = 1
+    
     def __init__(self):
         self.last_guide_id = ""
 
@@ -146,9 +148,8 @@ class DocentBot:
                 self.messages.append({"role": "assistant", "content": response_message})
             case _:
                 response_message = claude.create_response_text(messages=self.messages)
-                self.messages.append({"role": "assistant", "content": response_message})                
+                self.messages.append({"role": "assistant", "content": response_message})     
 
-        print("self.messages=>", self.messages)
         return references, response_message
 
     
