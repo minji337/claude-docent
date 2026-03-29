@@ -3,6 +3,7 @@ import os
 from dataclasses import dataclass
 import numpy as np
 
+
 @dataclass
 class DocEmbeddings:
     doc: str
@@ -10,8 +11,7 @@ class DocEmbeddings:
 
 
 client = OpenAI(
-    api_key=os.environ["UPSTAGE_API_KEY"],
-    base_url="https://api.upstage.ai/v1"
+    api_key=os.environ["UPSTAGE_API_KEY"], base_url="https://api.upstage.ai/v1"
 )
 
 query_str = "서울에서 루프탑 바 야경 추천해줘"
@@ -31,6 +31,7 @@ docs = [
 
 doc_embeddings_db: list[DocEmbeddings] = []
 
+
 def build(docs: list[str]):
     for doc in docs:
         response = client.embeddings.create(input=doc, model="embedding-query")
@@ -38,11 +39,13 @@ def build(docs: list[str]):
             DocEmbeddings(doc=doc, embeddings=response.data[0].embedding)
         )
 
+
 def cosine_similarity(A, B):
-  dot_product = np.dot(A, B)
-  norm_A = np.linalg.norm(A)
-  norm_B = np.linalg.norm(B)
-  return round(float(dot_product / (norm_A * norm_B)), 4)
+    dot_product = np.dot(A, B)
+    norm_A = np.linalg.norm(A)
+    norm_B = np.linalg.norm(B)
+    return round(float(dot_product / (norm_A * norm_B)), 4)
+
 
 def query(query: str, top_k: int = 3):
     response = client.embeddings.create(input=query, model="embedding-query")
@@ -62,7 +65,7 @@ def query(query: str, top_k: int = 3):
 query_str = "서울에서 루프탑 바 야경 추천해줘"
 build(docs)
 embedding_results = query(query_str, top_k=10)
-print("\n임베딩 벡터터 검색 상위 순:")
+print("\n임베딩 벡터 검색 상위 순:")
 print(*embedding_results, sep="\n")
 
 from rank_bm25 import BM25Okapi
@@ -72,7 +75,7 @@ from konlpy.tag import Okt
 okt = Okt()
 
 tokenized_docs = [okt.morphs(doc) for doc in docs]
-print(*tokenized_docs, sep='\n')
+print(*tokenized_docs, sep="\n")
 bm25 = BM25Okapi(tokenized_docs)
 tokenized_query = okt.morphs(query_str)
 print(tokenized_query)
@@ -85,6 +88,7 @@ print(*bm25_results, sep="\n")
 from typing import Tuple, DefaultDict
 from collections import defaultdict
 
+
 def get_rrf(
     ranked_lists: list[list[str]],
     k: int = 60,
@@ -92,15 +96,15 @@ def get_rrf(
 ) -> list[Tuple[str, float]]:
     scores: DefaultDict[str, float] = defaultdict(float)
     for weight, ranked_list in zip(weights, ranked_lists):
-        for rank, element in enumerate(ranked_list, start=1): 
+        for rank, element in enumerate(ranked_list, start=1):
             score = weight / (k + rank)
             scores[element] += score
 
     return sorted(scores.items(), key=lambda kv: kv[1], reverse=True)
 
+
 rrf_results = get_rrf(
-    ranked_lists=[embedding_results, bm25_results],
-    weights=[0.5, 0.5]
+    ranked_lists=[embedding_results, bm25_results], weights=[0.5, 0.5]
 )
 
 print("\nRRF 상위 순:")
