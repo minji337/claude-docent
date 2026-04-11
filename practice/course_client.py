@@ -2,8 +2,8 @@ import asyncio
 from fastmcp import Client
 from pprint import pprint
 
-#client = Client("http://127.0.0.1:8000/mcp")
-client = Client("practice/course_server.py")
+client = Client("http://127.0.0.1:8000/mcp")
+#client = Client("practice/course_server.py")
 
 
 async def call_mcp():
