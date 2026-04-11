@@ -8,6 +8,7 @@ message = client.messages.create(
     max_tokens=1024,
     messages=[{"role": "user", "content": "Hello, Claude?"}],
 )
-#print(message.content[0].text)
+
+print(message.content[0].text)
 print(type(message))
 print(message.model_dump())
